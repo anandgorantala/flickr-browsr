@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Flickr Browsr</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0" />
+	
+  </head>
+<body>
+	<div id="header">
+	<div class="logo">Flickr Browsr</div>
+	<form id="searchform" onSubmit="return false;">
+		<input type="radio" name="stype" id="tsearch" value="search" checked="checked" /><label for="tsearch" id="lsearch" class="active" title="Search">&nbsp;</label>
+		<span class="separator">&middot;</span>
+		<input type="radio" name="stype" id="tuser" value="user" /><label for="tuser" id="luser" title="Screen name or NSID">&nbsp;</label>
+		<input type="text" name="q" id="searchbox" class="textbox" />
+		<span class="inputhint">Search</span>
+		<span class="searchtip"><span class="arrowtip"></span>Search for photos or click the user icon to browse by Screen name/ NSID</span>	
+	</form>
+	<div class="clearfix"></div>
+	</div>
+	<div id="container"></div>
+	<div class="clearfix"></div>
+	<span id="statusbar"></span>
+	
+	<div id="footer">
+		<p>Designed by <a href="http://arrowconcept.com">Arrowconcept.com</a>. Flickr is a registered trademark of Yahoo Inc.</p>
+	</div>
+  
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+ <script type="text/javascript" src="scripts.js"></script>
+
+
+</body>
+
+</html>
