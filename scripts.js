@@ -189,9 +189,6 @@ Shadowbox.init({
 });
 
 
-
-
-
  var flickrapi = (function () {
 	var api_key = '4d22941636893fd6132c3c3c91554972';
 	var api_url = 'http://api.flickr.com/services/rest/';
@@ -210,10 +207,11 @@ Shadowbox.init({
 	}
 })();
 
-var photoloader = (function() {
+var flickrbrowsr = (function() {
 	var params = {}, 
 		user_id, 
 		page = 1, 
+		per_page = 20,
 		semaphore = 1, 
 		done = 0,
 		$window = $(window),
@@ -222,17 +220,13 @@ var photoloader = (function() {
 		$searchbox = $('#searchbox'),
 		$searchtip = $('.searchtip'),
 		$statusbar = $('#statusbar'),
+		$footer = $('#footer'),
 		$inputhint = $('.inputhint');
 	
 	return {
 		setup: function(args) {
-			page=1;
-			done = 0;
+			this.reset();
 			params = args;
-			$container.html('');
-			$searchtip.hide();
-			Shadowbox.close();
-
 			if(params.type == 'user') {
 				if(!params.query.match(/[^\d][@N][\d$]/)) {
 					this.getUser(params.query);
@@ -243,6 +237,15 @@ var photoloader = (function() {
 			} else {
 				this.loadphotos();
 			}
+		},
+		reset: function() {
+			page=1;
+			done = 0;
+			$container.html('');
+			$searchtip.hide();
+			Shadowbox.close();
+			Shadowbox.clearCache();
+			this.stickyfooter();
 		},
 		run: function() {
 			var hash, 
@@ -271,12 +274,11 @@ var photoloader = (function() {
 				$container.isotope( 'destroy' );
 			}
 			$statusbar.html('').removeClass('msg').css({display: 'block'});
-			Shadowbox.clearCache();
 			
 			$searchbox.val(query);
 			$('#l'+type).click();
 			
-			photoloader.setup({
+			flickrbrowsr.setup({
 				query:query,
 				type:type,
 				sort:sort
@@ -293,7 +295,7 @@ var photoloader = (function() {
 				method: 'flickr.urls.lookupUser',
 				url: 'http://flickr.com/photos/'+arguments[0],
 				format: 'json',
-				jsoncallback: 'photoloader.setUserIdFromUser'
+				jsoncallback: 'flickrbrowsr.setUserIdFromUser'
 			});
 		},
 		setUserIdFromUser: function(response) {
@@ -312,22 +314,22 @@ var photoloader = (function() {
 					flickrapi.callMethod({
 						method: 'flickr.people.getPublicPhotos',
 						user_id: params.user_id,
-						per_page: 20,
+						per_page: per_page,
 						page:page,
 						format: 'json',
 						extras: 'owner_name,views,url_c,url_z,url_b',
-						jsoncallback: 'photoloader.appendPhotos'
+						jsoncallback: 'flickrbrowsr.appendPhotos'
 					});
 				} else if(params.type == 'search') {
 					flickrapi.callMethod({
 						method: 'flickr.photos.search',
 						text: params.query,
 						sort: params.sort,
-						per_page: 20,
+						per_page: per_page,
 						page:page,
 						format: 'json',
 						extras: 'owner_name,views,url_c,url_z,url_b',
-						jsoncallback: 'photoloader.appendPhotos'
+						jsoncallback: 'flickrbrowsr.appendPhotos'
 					});
 				} else {
 					
@@ -352,7 +354,7 @@ var photoloader = (function() {
 				return;
 			}
 			var photoslength = data.photos.photo.length;
-			if(photoslength < 1) { $statusbar.addClass('msg').html('No more photos to show.'); done = 1; return; }
+			if(photoslength < 1) { $statusbar.addClass('msg').html('No more photos to show.'); done = 1; semaphore = 1; return; }
 			for (var i=0; i < photoslength; i++) {
 			  photo = data.photos.photo[i];
 			  t_url = "http://farm" + photo.farm + ".static.flickr.com/" + 
@@ -371,12 +373,15 @@ var photoloader = (function() {
 			//document.getElementById('container').innerHTML = document.getElementById('container').innerHTML + s;
 			var $newElems = $(s);
 			$container.append($newElems);
+			
+
 			 Shadowbox.setup($newElems, {
 				gallery: "flickr",
 				overlayOpacity: 0.93,
 				overlayColor:'#000'
 			});
 			$newElems.imagesLoaded(function(){
+				that.stickyfooter();
 				if(prevcontainerHTML != '') {
 					$container.isotope( 'appended', $newElems, true);
 				} else {
@@ -397,6 +402,13 @@ var photoloader = (function() {
 				that.doneLoadingImgs();
 			});
 			
+		},
+		stickyfooter: function() {
+			if($window.height() < $statusbar.offset().top) {
+				$footer.css({'position':'static'});
+			} else {
+				$footer.css({'position':'absolute'});
+			}
 		},
 		throwError: function(msg) {
 			$statusbar.html('<p class="error">:( '+msg+'</p>').addClass('msg');
@@ -421,12 +433,11 @@ $(document).ready(function() {
 		}
 	});
 	
-	photoloader.run();
+	flickrbrowsr.run();
 	
 	$(window).scroll(function() {
-		photoloader.loadphotos();
-		var $header = $("#header"),
-			$footer = $('#footer');
+		flickrbrowsr.loadphotos();
+		var $header = $("#header");
 			
 		if($header.offset().top  > 50) {
 			$header.addClass('overlay');
@@ -434,11 +445,6 @@ $(document).ready(function() {
 			$header.removeClass('overlay');
 		}
 		
-		if($footer.css('position') == 'absolute' && ($footer.offset().top  < $(window).scrollTop())) {
-			$footer.css({'position':'static'});
-		} else {
-			$footer.css({'position':'absolute'});
-		}
 	});
 			
 	$('#searchform').submit(function() {
@@ -446,7 +452,7 @@ $(document).ready(function() {
 		return false;
 	});
 	
-	$(window).hashchange(photoloader.run);
+	$(window).hashchange(flickrbrowsr.run);
 	
 	
 
