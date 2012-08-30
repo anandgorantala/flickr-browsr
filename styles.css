@@ -1,0 +1,315 @@
+body {
+	background:#242424;
+	margin:0;
+}
+body, input {
+	font-family:"Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Arial, sans-serif;
+	font-size:12px;
+}
+a {
+	text-decoration:none;
+}
+#header {
+	width:100%;
+	position:fixed;
+	top:0;
+	left:0;
+	padding-top:5px;
+	height:auto;
+	z-index:3;
+}
+#header.overlay {
+	background:rgba(0,0,0,0.7);
+}
+.logo {
+	float:left;
+	width: 190px;
+	margin:5px 15px;
+	height: 24px;
+	background: transparent url(logo.png) no-repeat 0 0;
+	text-indent:-9999px;
+}
+#container {
+	margin-top:55px;
+}
+a.photo {
+	width:320px;
+	margin:4px;
+	display:block;
+	overflow:hidden;
+	box-shadow:0 0 3px #444;
+	border-radius:4px;
+	float:left;
+}
+a.photo img {
+	width:320px;
+	display:block;
+	border-radius:4px;
+}
+a.photo span {
+	position:absolute;
+	bottom:0;
+	left:0;
+	width:310px;
+	color:#fff;
+	text-shadow:0 1px 1px #333;
+	font-size:11px;
+	padding:5px;
+	line-height:1.5em;
+	opacity:0.8;
+	max-height:31px;
+	overflow:hidden;
+	background: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%, rgba(0,0,0,0.65) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.65))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.65) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.65) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.65) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.65) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#a6000000',GradientType=0 ); /* IE6-9 */
+	-webkit-transition: max-height 0.5s linear;
+}
+a.photo:hover span {
+	opacity:1;
+	max-height:100px;
+}
+a.photo:focus, a.photo:hover {
+	outline:1px solid #FF0084;
+}
+.noopacity {
+	opacity:0;
+}
+.textbox {
+	padding:5px 5px 7px 60px;
+	background:transparent;
+	margin:5px 5px 9px 0;
+	border:1px solid #fff;
+	box-shadow:0 0 1px #ccc;
+	width:250px;
+	font-size:12px;
+	border-radius:40px;
+	color:#ddd;
+	float:left;
+}
+.textbox:focus {
+	outline:0;
+}
+input[type=radio] {
+	position:absolute;
+	top:-9999px;
+}
+form {
+	position:relative;
+	float:left;
+}
+.inputhint {
+	position:absolute;
+	color: #888;
+	top: 10px;
+	left: 60px;
+	font-size: 12px;
+	z-index: -1;
+	padding: 1px 2px;
+}
+label {
+	width:12px;
+	height:10px;
+	padding:4px;
+	position:absolute;
+	margin:10px 1px;
+	left:5px;
+	top:-3px;
+	background:url('icons.png') no-repeat 0 0;
+	cursor:pointer;
+	opacity:0.4;
+	-webkit-transition:left .5s linear, opacity .5s linear;
+}
+.separator {
+	color:#fff;
+	position:absolute;
+	top:8px;
+	left:27px;
+}
+label#lsearch {
+	background-position:-20px 0;
+}
+label.active {
+	opacity:1;
+	left:35px;
+}
+#statusbar {
+	margin:70px auto;
+	display:block;
+	padding:0.3em 0.8em;
+	border-radius:8px;
+	width:24px;
+	min-height:12px;
+	font-size:16px;
+	display:none;
+	background:url('http://l.yimg.com/g/images/progress/balls-24x12-black.gif') no-repeat center center;
+	background-color:#000;
+	-webkit-transition: display 1s linear;
+}
+#statusbar.msg, #statusbar.hidden.msg {
+	display: block;
+	width: auto;
+	background: none;
+	color: #CCC;
+	text-align: center;
+}
+.searchtip {
+	background:#fff;
+	font-size:12px;
+	padding:0.5em 1em;
+	position:absolute;
+	bottom:-3.75em;
+	display:block;
+	border-radius:4px;
+	opacity:0;
+	-webkit-transition: opacity 3s ease-out;
+}
+.searchtip .arrowtip {
+	position:absolute;
+	width:0;
+	height:0;
+	border-width:10px;
+	border-style:solid;
+	border-color:transparent transparent transparent #fff;
+	left:20%;
+	top:-10px;
+}
+#header.overlay .searchtip {
+	display:none;
+}
+.hidden, #statusbar.hidden {
+	display:none;
+}
+#footer {
+	color:#999;
+	position:absolute;
+	bottom:0;
+	width:99%;
+	text-align:center;
+	padding:1em 0;
+}
+#footer a {
+	color:#fff;
+}
+#footer a:hover {
+	text-decoration:underline;
+}
+.error {
+	color: #fff;
+	padding: 10px;
+	margin: 0 auto;
+}
+.clearfix {
+	clear:both;
+}
+
+.isotope-item {
+  z-index: 2;
+}
+
+.isotope-hidden.isotope-item {
+  pointer-events: none;
+  z-index: 1;
+}
+.isotope,
+.isotope .isotope-item {
+  /* change duration value to whatever you like */
+  -webkit-transition-duration: 0.8s;
+	 -moz-transition-duration: 0.8s;
+	  -ms-transition-duration: 0.8s;
+	   -o-transition-duration: 0.8s;
+		  transition-duration: 0.8s;
+}
+
+.isotope {
+  -webkit-transition-property: height, width;
+	 -moz-transition-property: height, width;
+	  -ms-transition-property: height, width;
+	   -o-transition-property: height, width;
+		  transition-property: height, width;
+}
+
+.isotope .isotope-item {
+  -webkit-transition-property: -webkit-transform, opacity;
+	 -moz-transition-property:    -moz-transform, opacity;
+	  -ms-transition-property:     -ms-transform, opacity;
+	   -o-transition-property:         top, left, opacity;
+		  transition-property:         transform, opacity;
+}
+.isotope.no-transition,
+.isotope.no-transition .isotope-item,
+.isotope .isotope-item.no-transition {
+  -webkit-transition-duration: 0s;
+	 -moz-transition-duration: 0s;
+	  -ms-transition-duration: 0s;
+	   -o-transition-duration: 0s;
+		  transition-duration: 0s;
+}
+		
+
+
+
+
+#sb-title-inner,#sb-info-inner,#sb-loading-inner,div.sb-message{font-weight:200;color:#fff;}
+#sb-container{position:fixed;margin:0;padding:0;top:0;left:0;z-index:999;text-align:left;visibility:hidden;display:none;}
+#sb-overlay{position:relative;height:100%;width:100%;}
+#sb-wrapper{position:absolute;visibility:hidden;width:100px;}
+#sb-wrapper-inner{position:relative;border:1px solid #303030;overflow:hidden;height:100px;}
+#sb-body{position:relative;height:100%;}
+#sb-body-inner{position:absolute;height:100%;width:100%;}
+#sb-player.html{height:100%;overflow:auto;}
+#sb-body img{border:none;}
+#sb-loading{position:relative;height:100%;}
+#sb-loading-inner{position:absolute;font-size:14px;line-height:24px;height:24px;top:50%;margin-top:-12px;width:100%;text-align:center;}
+#sb-loading-inner span{background:url(http://l.yimg.com/g/images/progress/balls-24x12-black.gif) no-repeat;padding-left:34px;display:inline-block;}
+#sb-body,#sb-loading{background-color:#060606;}
+#sb-title,#sb-info{position:relative;margin:0;padding:0;overflow:hidden;}
+#sb-title,#sb-title-inner{height:auto;line-height:30px;}
+#sb-title a {color:#fff;text-decoration:none;}
+#sb-title a:hover {text-decoration:underline;}
+#sb-title .title-secondline {display:block;font-size:11px;color:#999;line-height:18px;}
+#sb-title-inner{font-size:20px;}
+#sb-info,#sb-info-inner{height:20px;line-height:20px;}
+#sb-info-inner{font-size:12px;}
+#sb-nav1{position:absolute;height:16px;padding:2px 0;width:100%;height:100%;top:0;}
+#sb-nav a{display:block;height:16px;width:16px;cursor:pointer;background-repeat:no-repeat;position:absolute;background-position:center center;padding:0.4em;}
+#sb-nav a:hover{background-color:rgba(255,255,255,0.08);}
+#sb-nav #sb-nav-close{background-image:url(close.png);top:0;right:0;z-index:1001;background-color:rgba(255,255,255,0.1);width: 80px;color: #fff;background-position: 95% center;padding: 6px 3px 6px 5px;font-size: 12px;}
+#sb-nav #sb-nav-next{background-image:url(next.png);top:0;right:0;width:75px;height:100%;border-left:1px solid rgba(255,255,255,0.08);}
+#sb-nav #sb-nav-previous{background-image:url(previous.png);top:0;left:0;width:75px;height:100%;border-right:1px solid rgba(255,255,255,0.08);}
+#sb-nav #sb-nav-play{background-image:url(play.png); bottom:10px;left:50%;padding:10px;background-color:rgba(255,255,255,0.1);border-radius:50px;}
+#sb-nav #sb-nav-pause{background-image:url(pause.png); bottom:10px; left:50%;padding:10px;background-color:rgba(255,255,255,0.1);border-radius:50px;}
+#sb-counter{float:left;width:45%;}
+#sb-counter a{padding:0 4px 0 0;text-decoration:none;cursor:pointer;color:#fff;}
+#sb-counter a.sb-counter-current{text-decoration:underline;}
+div.sb-message{font-size:12px;padding:10px;text-align:center;}
+div.sb-message a:link,div.sb-message a:visited{color:#fff;text-decoration:underline;}
+
+@media (max-width:500px) {
+#header {
+position:static;
+}
+.textbox {
+max-width:60%;
+}
+#container {
+margin-top:10px;
+}
+a.photo, a.photo img {
+width:140px;
+}
+a.photo span {
+width:130px;
+max-height:15px;
+}
+#sb-nav #sb-nav-next, #sb-nav #sb-nav-previous{
+display:none;
+}
+.searchtip {
+display:none;
+}
+
+}
