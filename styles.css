@@ -191,7 +191,6 @@ label.active {
 	width:99%;
 	text-align:center;
 	padding:1em 0;
-	display:none;
 }
 #footer a {
 	color:#fff;
@@ -280,8 +279,8 @@ label.active {
 #sb-nav a{display:block;height:16px;width:16px;cursor:pointer;background-repeat:no-repeat;position:absolute;background-position:center center;padding:0.4em;}
 #sb-nav a:hover{background-color:rgba(255,255,255,0.08);}
 #sb-nav #sb-nav-close{background-image:url(close.png);top:0;right:0;z-index:1001;background-color:rgba(255,255,255,0.1);width: 80px;color: #fff;background-position: 95% center;padding: 6px 3px 6px 5px;font-size: 12px;}
-#sb-nav #sb-nav-next{background-image:url(next.png);top:0;right:0;width:75px;height:100%;border-left:1px solid rgba(255,255,255,0.08);}
-#sb-nav #sb-nav-previous{background-image:url(previous.png);top:0;left:0;width:75px;height:100%;border-right:1px solid rgba(255,255,255,0.08);}
+#sb-nav #sb-nav-next{background-image:url(next.png);top:0;right:0;width:75px;height:100%;}
+#sb-nav #sb-nav-previous{background-image:url(previous.png);top:0;left:0;width:75px;height:100%;}
 #sb-nav #sb-nav-play{background-image:url(play.png); bottom:10px;left:50%;padding:10px;background-color:rgba(255,255,255,0.1);border-radius:50px;}
 #sb-nav #sb-nav-pause{background-image:url(pause.png); bottom:10px; left:50%;padding:10px;background-color:rgba(255,255,255,0.1);border-radius:50px;}
 #sb-counter{float:left;width:45%;}
@@ -294,11 +293,22 @@ div.sb-message a:link,div.sb-message a:visited{color:#fff;text-decoration:underl
 #header {
 position:static;
 }
+#footer {
+	display:none;
+}
+.logo {
+	display:block;
+}
 .textbox {
-max-width:60%;
+max-width:70%;
 }
 #container {
 margin-top:10px;
+}
+form {
+	display:block;
+	position:relative;
+	width:100%;
 }
 a.photo, a.photo img {
 width:140px;
@@ -307,7 +317,19 @@ a.photo span {
 width:130px;
 max-height:15px;
 }
-#sb-nav #sb-nav-next, #sb-nav #sb-nav-previous{
+#sb-nav #sb-nav-close{
+	width:16px;
+	font-size:10px;
+	text-indent:-9999px;
+}
+#sb-nav #sb-nav-next{	
+	width:16px;
+}
+#sb-nav #sb-nav-previous{	
+	width:16px;
+	
+}
+#sb-title {
 display:none;
 }
 .searchtip {
