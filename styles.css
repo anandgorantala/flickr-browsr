@@ -8,6 +8,7 @@ body, input {
 }
 a {
 	text-decoration:none;
+	color:#fff;
 }
 #header {
 	width:100%;
@@ -79,12 +80,12 @@ a.photo:focus, a.photo:hover {
 	opacity:0;
 }
 .textbox {
-	padding:5px 5px 7px 60px;
+	padding:5px 5px 7px 40px;
 	background:transparent;
 	margin:5px 5px 9px 0;
 	border:1px solid #fff;
 	box-shadow:0 0 1px #ccc;
-	width:250px;
+	width:290px;
 	font-size:12px;
 	border-radius:40px;
 	color:#ddd;
@@ -106,7 +107,7 @@ form {
 	position:absolute;
 	color: #888;
 	top: 10px;
-	left: 60px;
+	left: 40px;
 	font-size: 12px;
 	z-index: -1;
 	padding: 1px 2px;
@@ -117,25 +118,41 @@ label {
 	padding:4px;
 	position:absolute;
 	margin:10px 1px;
-	left:5px;
+	right:15px;
 	top:-3px;
 	background:url('icons.png') no-repeat 0 0;
 	cursor:pointer;
 	opacity:0.4;
 	-webkit-transition:left .5s linear, opacity .5s linear;
+	-webkit-transition:right .5s linear, opacity .5s linear;
 }
 .separator {
 	color:#fff;
 	position:absolute;
 	top:8px;
 	left:27px;
+	display:none;
 }
 label#lsearch {
 	background-position:-20px 0;
+	right:35px;
 }
 label.active {
 	opacity:1;
-	left:35px;
+	left:15px;
+	right:auto;
+}
+label#lphotoset {
+	right:45px;
+	background-position:-80px 0;
+}
+label#lgallery {
+	right:55px;
+	background-position:-60px 0;
+}
+label#lgroups {
+	right:75px;
+	background-position:-40px 0;
 }
 #statusbar {
 	margin:70px auto;
@@ -184,6 +201,40 @@ label.active {
 .hidden, #statusbar.hidden {
 	display:none;
 }
+#userinfo {
+	float:left;
+	color:#fff;
+	margin:5px;
+}
+#userinfo img {
+	width:28px;
+	float:left;
+}
+#userinfo .details {
+	margin:0 5px 0 35px;
+	font-size:11px;
+}
+#userinfo .name {
+	margin:0 0 2px 0;
+	font-weight:bold;
+}
+#userinfo a:hover {
+	text-decoration:underline;
+}
+.setCase {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	width: 91px;
+	height: 95px;
+	padding: 7px 0 0 7px;
+	background: url(http://l.yimg.com/g/images/set_case.gif) no-repeat;
+	float: left;
+	margin: 1em;
+}
+.setCase img {
+	width:75px;
+	height:75px;
+}
 #footer {
 	color:#999;
 	position:absolute;
@@ -215,41 +266,7 @@ label.active {
   pointer-events: none;
   z-index: 1;
 }
-.isotope,
-.isotope .isotope-item {
-  /* change duration value to whatever you like */
-  -webkit-transition-duration: 0.8s;
-	 -moz-transition-duration: 0.8s;
-	  -ms-transition-duration: 0.8s;
-	   -o-transition-duration: 0.8s;
-		  transition-duration: 0.8s;
-}
 
-.isotope {
-  -webkit-transition-property: height, width;
-	 -moz-transition-property: height, width;
-	  -ms-transition-property: height, width;
-	   -o-transition-property: height, width;
-		  transition-property: height, width;
-}
-
-.isotope .isotope-item {
-  -webkit-transition-property: -webkit-transform, opacity;
-	 -moz-transition-property:    -moz-transform, opacity;
-	  -ms-transition-property:     -ms-transform, opacity;
-	   -o-transition-property:         top, left, opacity;
-		  transition-property:         transform, opacity;
-}
-.isotope.no-transition,
-.isotope.no-transition .isotope-item,
-.isotope .isotope-item.no-transition {
-  -webkit-transition-duration: 0s;
-	 -moz-transition-duration: 0s;
-	  -ms-transition-duration: 0s;
-	   -o-transition-duration: 0s;
-		  transition-duration: 0s;
-}
-		
 
 
 
