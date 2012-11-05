@@ -232,10 +232,14 @@ var flickrbrowsr = (function() {
 		photo_width,
 		page = 1, 
 		per_page = 50,
+		offset = -600,
+		format = 'json',
+		extras = 'owner_name,views,url_c,url_t,url_z,url_b',
 		semaphore = 1, 
 		done = 0,
 		$window = $(window),
 		$windowwidth = $window.width(),
+		$body = $('body'),
 		$container = $('#container'), 
 		$searchbox = $('#searchbox'),
 		$searchtip = $('.searchtip'),
@@ -248,30 +252,35 @@ var flickrbrowsr = (function() {
 		setup: function(args) {
 			this.reset();
 			
-			this.activateScrollHandler();
-			
-			
+			if(!params.view) {
+				this.activateScrollHandler();
+			}
 			params = args;
+			$body.removeClass($body.attr('class')).addClass(params.view);
 			switch(params.type) {
-				case 'user':
+				case 'user': case 'favorites':
 					if(!params.query.match(/[^\d][@N][\d$]/)) {
 						this.getUser(params.query);
 					} else {
 						params.user_id = params.query;
 						this.getUserInfo(params.user_id);
-						this.loadphotos();
+						if(!params.view) {
+							this.loadphotos();
+						}
 					}
 					break;
 				case 'groups':
 					this.lookupGroup(params.query);
+					break;
+				case 'gallery':
+					this.lookupGallery(params.query);
 					break;
 				default: 
 					this.loadphotos();
 					break;
 			}
 			
-			
-			
+
 		},
 		reset: function() {
 			page=1;
@@ -334,7 +343,8 @@ var flickrbrowsr = (function() {
 			$statusbar.html('').removeClass('msg').css({display: 'block'});
 			
 			$searchbox.val(query);
-			$('#l'+type).click();
+			$('#selecttype').val(type);
+			$('#selecttype').change();
 			
 			flickrbrowsr.setup({
 				query:query,
@@ -345,10 +355,16 @@ var flickrbrowsr = (function() {
 
 		
 		},
+		/*
+		** To load the next set of images after the previous images have loaded.
+		*/
 		doneLoadingImgs: function() {
 			semaphore = 1;
 			this.loadphotos();
 		},
+		/*
+		** Gets the user NSID from the username from the URL
+		*/
 		getUser: function(user) {
 			flickrapi.callMethod({
 				method: 'flickr.urls.lookupUser',
@@ -362,11 +378,16 @@ var flickrbrowsr = (function() {
 			if(data.stat == 'ok') {
 				params.user_id = data.user.id;
 				this.getUserInfo(data.user.id);
-				this.loadphotos();
+				if(!params.view) {
+					this.loadphotos();
+				}
 			} else {
 				this.throwError(data.message);
 			}
 		},
+		/*
+		** Get the user info from the NSID and show at the top. Make calls to show collections, photosets, galleries, favorites
+		*/
 		getUserInfo: function(input) {
 			if(typeof input != 'object') {
 				flickrapi.callMethod({
@@ -389,6 +410,9 @@ var flickrbrowsr = (function() {
 				this.getPhotosetsOfUser(data.nsid);
 				this.getGalleriesOfUser(data.nsid);
 				this.getCollectionsOfUser(data.nsid);
+				this.getGroupsOfUser(data.nsid);
+				this.getContactsOfUser(data.nsid);
+				this.getFavoritesOfUser(data.nsid);
 			}
 		},
 		getPhotosetsOfUser: function(input) {
@@ -401,14 +425,22 @@ var flickrbrowsr = (function() {
 				});
 			} else {
 				var data = input.photosets;
-				$userinfo.find('.details').append('&middot; '+ data.total +' photosets');
-				if(params.view =='photoset') {
-					$container.html('');
+				if(data.total) {
+					$userinfo.find('.details').append('&middot; <a class="photosets" href="#q='+params.query+'&type=user&view=photosets">'+ data.total +' photosets</a>');
+				} else {
+					$userinfo.find('.details').append('&middot; '+ data.total +' photosets');
+				}
+				if(params.view =='photosets') {
+					var photosethtml = '';
 					for(var i=0;i<data.photoset.length;i++) {
-						var photoset_img = "http://farm" + data.photoset[i].farm + ".static.flickr.com/" + 
-							data.photoset[i].server + "/" + data.photoset[i].primary + "_" + data.photoset[i].secret + "_" + "s.jpg";
-						$container.append('<a href="#q='+data.photoset[i].id+'&type=photoset" class="setCase"><img src="'+photoset_img+'" alt=""></a>');
+						var photoset_curr = data.photoset[i];
+						var photoset_img = "http://farm" + photoset_curr.farm + ".static.flickr.com/" + 
+							photoset_curr.server + "/" + photoset_curr.primary + "_" + photoset_curr.secret + "_" + "s.jpg";
+							photosethtml +='<div class="photoset"><a href="#q='+photoset_curr.id+'&type=photoset" class="setCase"><img src="'+photoset_img+'" alt=""></a>'+
+							'<a href="#q='+photoset_curr.id+'&type=photoset"><span class="settitle">'+photoset_curr.title._content+'</span><span class="photocount">'+photoset_curr.photos+' photos</span></a></div>';
 					}
+					$container.html(photosethtml);
+					$statusbar.hide();
 				}
 			}
 		},
@@ -422,7 +454,23 @@ var flickrbrowsr = (function() {
 				});
 			} else {
 				var data = input.galleries;
-				$userinfo.find('.details').append('&middot; '+ data.total +' galleries');
+				if(data.total) {
+					$userinfo.find('.details').append('&middot; <a class="galleries" href="#q='+params.query+'&type=user&view=galleries">'+ data.total +' galleries</a>');
+				} else {
+					$userinfo.find('.details').append('&middot; '+ data.total +' galleries');
+				}
+				if(params.view =='galleries') {
+					var containerhtml = '';
+					for(var i=0;i<data.gallery.length;i++) {
+						var gallery_curr = data.gallery[i];
+						var gallery_img = "http://farm" + gallery_curr.primary_photo_farm + ".static.flickr.com/" + 
+							gallery_curr.primary_photo_server + "/" + gallery_curr.primary_photo_id + "_" + gallery_curr.primary_photo_secret + "_" + "s.jpg";
+							containerhtml +='<div class="photoset gallery"><a href="#q='+gallery_curr.url+'&type=gallery" class="setCase"><img src="'+gallery_img+'" alt=""></a>'+
+							'<a href="#q='+gallery_curr.url+'&type=gallery"><span class="settitle">'+gallery_curr.title._content+'</span><span class="photocount">'+(parseInt(gallery_curr.count_photos)+parseInt(gallery_curr.count_videos))+' photos</span><span class="photocount">'+gallery_curr.count_views+' views</span></a></div>';
+					}
+					$container.html(containerhtml);
+					$statusbar.hide();
+				}
 			}
 		},
 		getCollectionsOfUser: function(input) {
@@ -436,6 +484,88 @@ var flickrbrowsr = (function() {
 			} else {
 				var data = input.collections;
 				$userinfo.find('.details').append('&middot; '+ this.jsonItemCount(data) +' collections');
+				if(params.view =='collections') {
+					var collectionshtml = '';
+					for(var i=0;i<data.collection.length;i++) {
+						var collection_curr = data.collection[i];
+						
+						for(var i=0;i<collection_curr.set.length;i++) {
+							var photoset_curr = collection_curr.set[i];
+							var photoset_img = "http://farm" + photoset_curr.farm + ".static.flickr.com/" + 
+								photoset_curr.server + "/" + photoset_curr.primary + "_" + photoset_curr.secret + "_" + "s.jpg";
+								$container.append('<div class="photoset"><a href="#q='+photoset_curr.id+'&type=photoset" class="setCase"><img src="'+photoset_img+'" alt=""></a>'+
+								'<a href="#q='+photoset_curr.id+'&type=photoset"><span class="settitle">'+photoset_curr.title._content+'</span><span class="photocount">'+photoset_curr.photos+' photos</span></a></div>');
+						}
+					}
+					$container.html(collectionshtml);
+				}
+			}
+		},
+		getGroupsOfUser: function(input) {
+			if(typeof input != 'object') {
+				flickrapi.callMethod({
+					method: 'flickr.people.getPublicGroups',
+					user_id: arguments[0],
+					format: 'json',
+					jsoncallback: 'flickrbrowsr.getGroupsOfUser'
+				});
+			} else {
+				var data = input.groups;
+				$userinfo.find('.details').append('&middot; <a href="#q='+params.user_id+'&type=user&view=groups" class="groups">'+ this.jsonItemCount(data.group) +' groups</a>');
+				if(params.view =='groups') {
+					var groupshtml = '';
+					for(var i=0;i<data.group.length;i++) {
+						var group_curr = data.group[i];
+						var group_img = group_curr.iconserver != 0 ? 
+									'http://farm'+group_curr.iconfarm+'.staticflickr.com/'+group_curr.iconserver+'/buddyicons/'+group_curr.nsid+'.jpg' : 
+									'http://www.flickr.com/images/buddyicon.gif';
+						groupshtml += '<div class="group"><a href="#q='+group_curr.nsid+'&type=group"><img src="'+group_img+'" alt=""></a><div class="groupinfo"><a href="#q='+group_curr.nsid+'&type=group">'+group_curr.name+'</a><span class="stats">'+group_curr.pool_count+' photos &middot; '+group_curr.members+' members</span></div></div>';
+					}
+					$container.html(groupshtml);
+					$statusbar.hide();
+				}
+			}
+		},
+		getContactsOfUser: function(input) {
+			if(typeof input != 'object') {
+				flickrapi.callMethod({
+					method: 'flickr.contacts.getPublicList',
+					user_id: arguments[0],
+					format: 'json',
+					jsoncallback: 'flickrbrowsr.getContactsOfUser'
+				});
+			} else {
+				var data = input.contacts;
+				$userinfo.find('.details').append('&middot; <a href="#q='+params.user_id+'&type=user&view=contacts" class="contacts">'+ data.total +' contacts</a>');
+				if(params.view =='contacts') {
+					var contactshtml = '';
+					for(var i=0;i<data.contact.length;i++) {
+						var contact_curr = data.contact[i];
+						var contact_img = contact_curr.iconserver != 0 ? 
+									'http://farm'+contact_curr.iconfarm+'.staticflickr.com/'+contact_curr.iconserver+'/buddyicons/'+contact_curr.nsid+'.jpg' : 
+									'http://www.flickr.com/images/buddyicon.gif';
+						contactshtml += '<a href="#q='+contact_curr.nsid+'&type=user" class="contact" title="'+contact_curr.username+'"><img src="'+contact_img+'" alt=""></a>';
+					}
+					$container.html(contactshtml);
+					$statusbar.hide();
+				}
+			}
+		},
+		getFavoritesOfUser: function(input) {
+			if(typeof input != 'object') {
+				flickrapi.callMethod({
+					method: 'flickr.favorites.getPublicList',
+					user_id: arguments[0],
+					per_page: 5,
+					format: 'json',
+					jsoncallback: 'flickrbrowsr.getFavoritesOfUser'
+				});
+			} else {
+				var data = input.photos;
+				$userinfo.find('.details').append('&middot; <a href="#q='+params.user_id+'&type=favorites">'+ data.total +' Favorites</a>');
+				if(params.view =='favorites') {
+					
+				}
 			}
 		},
 		lookupGroup: function(input) {
@@ -456,8 +586,26 @@ var flickrbrowsr = (function() {
 				}
 			}
 		},
+		lookupGallery: function(input) {
+			if(typeof input != 'object') {
+				flickrapi.callMethod({
+					method: 'flickr.urls.lookupGallery',
+					url: arguments[0],
+					format: 'json',
+					jsoncallback: 'flickrbrowsr.lookupGallery'
+				});
+			} else {
+				var data = input;
+				if(data.stat == 'ok') {
+					params.query = data.gallery.id;
+					this.loadphotos();
+				} else {
+					this.throwError(data.message);
+				}
+			}
+		},
 		loadphotos: function() {
-			if((($window.scrollTop()+ $window.height()) - $statusbar.offset().top  > -600) && semaphore == 1 && done != 1) {
+			if((($window.scrollTop()+ $window.height()) - $statusbar.offset().top  > offset) && semaphore == 1 && done != 1) {
 				semaphore = 0;
 				if(params.type == 'user') {
 					flickrapi.callMethod({
@@ -465,8 +613,18 @@ var flickrbrowsr = (function() {
 						user_id: params.user_id,
 						per_page: per_page,
 						page:page,
+						format: format,
+						extras: extras,
+						jsoncallback: 'flickrbrowsr.appendPhotos'
+					});
+				} else if(params.type == 'favorites') {
+					flickrapi.callMethod({
+						method: 'flickr.favorites.getPublicList',
+						user_id: params.user_id,
+						per_page: per_page,
+						page:page,
 						format: 'json',
-						extras: 'owner_name,views,url_c,url_t,url_z,url_b',
+						extras: extras,
 						jsoncallback: 'flickrbrowsr.appendPhotos'
 					});
 				} else if(params.type == 'search') {
@@ -476,8 +634,8 @@ var flickrbrowsr = (function() {
 						sort: params.sort,
 						per_page: per_page,
 						page:page,
-						format: 'json',
-						extras: 'owner_name,views,url_c,url_t,url_z,url_b',
+						format: format,
+						extras: extras,
 						jsoncallback: 'flickrbrowsr.appendPhotos'
 					});
 				} else if(params.type == 'photoset') {
@@ -486,8 +644,8 @@ var flickrbrowsr = (function() {
 						photoset_id: params.query,
 						per_page: per_page,
 						page:page,
-						format: 'json',
-						extras: 'owner_name,views,url_c,url_t,url_z,url_b',
+						format: format,
+						extras: extras,
 						jsoncallback: 'flickrbrowsr.appendPhotos'
 					});
 				} else if(params.type == 'gallery') {
@@ -496,18 +654,18 @@ var flickrbrowsr = (function() {
 						gallery_id: params.query,
 						per_page: per_page,
 						page:page,
-						format: 'json',
-						extras: 'owner_name,views,url_c,url_t,url_z,url_b',
+						format: format,
+						extras: extras,
 						jsoncallback: 'flickrbrowsr.appendPhotos'
 					});
-				} else if(params.type == 'groups') {
+				} else if(params.type == 'group') {
 					flickrapi.callMethod({
 						method: 'flickr.groups.pools.getPhotos',
 						group_id: params.query,
 						per_page: per_page,
 						page:page,
-						format: 'json',
-						extras: 'owner_name,views,url_c,url_t,url_z,url_b',
+						format: format,
+						extras: extras,
 						jsoncallback: 'flickrbrowsr.appendPhotos'
 					});
 				} else {
@@ -539,6 +697,7 @@ var flickrbrowsr = (function() {
 			switch(params.type) {
 				case 'photoset':
 					photodata = data.photoset;
+					photoowner = photodata.owner;
 					break;
 				default:
 					photodata = data.photos;
@@ -558,12 +717,14 @@ var flickrbrowsr = (function() {
 			  
 			  img_width = photo_width;
 			  img_height = parseInt(photo_width*photo.height_t/photo.width_t);
-			  
-			  permalink = "http://www.flickr.com/photos/" + photo.owner + "/" + photo.id;
-			  owner_url = "http://www.flickr.com/photos/" + photo.owner;
-			  s +=  '<a rel="shadowbox[flickr]" data-owner_name="'+photo.ownername+'" data-views="'+photo.views+'" data-permalink="'+permalink+'" data-owner_id="'+photo.owner+'" data-owner_url="'+owner_url+'" class="photo noopacity" title="'+ photo.title.replace(/"/g, "&quot;").replace(/>/g, "&gt;").replace(/</g, "&lt;") + 
+			  if(!photoowner) { photoowner = photo.owner; }
+			  permalink = "http://www.flickr.com/photos/" + photoowner + "/" + photo.id;
+			  owner_url = "http://www.flickr.com/photos/" + photoowner;
+			  s +=  '<a rel="shadowbox[flickr]" data-owner_name="'+photo.ownername+'" data-views="'+photo.views+'" data-permalink="'+permalink+'" data-owner_id="'+photoowner+'" data-owner_url="'+owner_url+'" class="photo noopacity" title="'+ photo.title.replace(/"/g, "&quot;").replace(/>/g, "&gt;").replace(/</g, "&lt;") + 
 				'" href="' + full_url + '">' + '<img alt="'+ photo.title + 
 				'" src="' + t_url + '" width="'+img_width+'" height="'+img_height+'"/>' + '<span>'+photo.title+'</span></a>';
+				
+			  if(photo.owner) { photoowner = ''; }
 			}
 			var prevcontainerHTML = document.getElementById('container').innerHTML;
 			//document.getElementById('container').innerHTML = document.getElementById('container').innerHTML + s;
@@ -627,6 +788,11 @@ $(document).ready(function() {
 		$(this).addClass('active');
 		$('#searchbox').focus();
 	});
+	$('#selecttype').change(function() {
+		$('.inputhint').html($('#selecttype option:selected').attr('title'));
+		$('#searchbox').focus();
+		$('.textbox').change();
+	});
 	
 	$('.textbox').bind('keyup focus click change blur',function() {
 		if($(this).val() !='') {
@@ -641,7 +807,7 @@ $(document).ready(function() {
 
 			
 	$('#searchform').submit(function() {
-		window.location.hash = 'q='+$('#searchbox').val()+'&'+'type='+$('input[name=stype]:checked').val();
+		window.location.hash = 'q='+$('#searchbox').val()+'&'+'type='+$('#selecttype').val();
 		return false;
 	});
 	

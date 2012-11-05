@@ -2,7 +2,7 @@ body {
 	background:#242424;
 	margin:0;
 }
-body, input {
+body, input, select {
 	font-family:"Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Arial, sans-serif;
 	font-size:12px;
 }
@@ -80,19 +80,29 @@ a.photo:focus, a.photo:hover {
 	opacity:0;
 }
 .textbox {
-	padding:5px 5px 7px 40px;
+	padding:5px 5px 7px 90px;
 	background:transparent;
 	margin:5px 5px 9px 0;
 	border:1px solid #fff;
 	box-shadow:0 0 1px #ccc;
-	width:290px;
+	width:250px;
 	font-size:12px;
-	border-radius:40px;
+	border-radius:4px;
 	color:#ddd;
 	float:left;
 }
 .textbox:focus {
 	outline:0;
+}
+select.typeselect {
+	color: white;
+	background: #444;
+	border: 0;
+	position: absolute;
+	left: 0px;
+	top: 4px;
+	padding: 0.5em;
+	font-size: 11px;
 }
 input[type=radio] {
 	position:absolute;
@@ -107,7 +117,7 @@ form {
 	position:absolute;
 	color: #888;
 	top: 10px;
-	left: 40px;
+	left: 90px;
 	font-size: 12px;
 	z-index: -1;
 	padding: 1px 2px;
@@ -221,19 +231,86 @@ label#lgroups {
 #userinfo a:hover {
 	text-decoration:underline;
 }
+.photoset {
+	width:100px;
+	float: left;
+	margin: 1em;
+	height:160px;
+	overflow:hidden;
+}
 .setCase {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	width: 91px;
 	height: 95px;
 	padding: 7px 0 0 7px;
-	background: url(http://l.yimg.com/g/images/set_case.gif) no-repeat;
-	float: left;
-	margin: 1em;
+	background: url(set_case.gif) no-repeat;
+	display:block;
 }
 .setCase img {
 	width:75px;
 	height:75px;
+}
+.photoset span {
+	line-height:1.5em;
+}
+.photoset .settitle {
+	display:block;
+	max-height:35px;
+	overflow:hidden;
+}
+.photoset .photocount {
+	color:#999;
+	font-size:0.8em;
+	display:block;
+}
+.gallery {
+	width:225px;
+	height:100px;
+}
+.gallery .setCase {
+	float:left;
+	margin-right:10px;
+}
+.gallery .settitle {
+	margin-top:10px;
+	max-height:50px;
+}
+.group {
+	padding:1em;
+	float:left;
+	margin:1px 1px 0 0;
+	background:#333;
+	width:300px;
+	height:50px;
+}
+.group:hover {
+	background:transparent;
+}
+.group a {
+	font-weight:bold;
+	display:block;
+	padding:0 0 0.3em 0;
+}
+.group img {
+	float:left;
+	margin:0 5px 0 0;
+}
+.group .stats {
+	color:#ccc;
+	font-size:0.9em;
+	display:block;
+}
+.groupinfo {
+	margin:0 0 0 55px;
+}
+.contact {
+	float:left;
+	margin:0 0 10px 10px;
+}
+.galleries .galleries, .photosets .photosets, .collections .collections, .groups .groups, .contacts .contacts {
+	background:#0063dc;
+	background:#FF0084;
 }
 #footer {
 	color:#999;
@@ -242,6 +319,7 @@ label#lgroups {
 	width:99%;
 	text-align:center;
 	padding:1em 0;
+	font-size:11px;
 }
 #footer a {
 	color:#fff;
@@ -352,5 +430,7 @@ display:none;
 .searchtip {
 display:none;
 }
-
+.photoset {
+	margin:2px;
+}
 }
