@@ -24,7 +24,7 @@ f)+"</div>"}else e=true;else if(c.player=="inline")if(g=Ia.exec(c.content))(g=n(
 b.close=function(){if(q){q=false;if(b.player){b.player.remove();b.player=null}if(typeof p=="number"){clearTimeout(p);p=null}A=0;Y(false);b.options.onClose(b.getCurrent());b.skin.onClose();b.revertOptions()}};b.play=function(){if(b.hasNext()){A||(A=b.options.slideshowDelay*1E3);if(A){T=(new Date).getTime();p=setTimeout(function(){A=T=0;b.next()},A);if(b.skin.onPlay)b.skin.onPlay()}}};b.pause=function(){if(typeof p=="number")if(A=Math.max(0,A-((new Date).getTime()-T))){clearTimeout(p);p="pause";if(b.skin.onPause)b.skin.onPause()}};
 b.change=function(a){if(!(a in b.gallery))if(b.options.continuous){a=a<0?b.gallery.length+a:0;if(!(a in b.gallery))return}else return;b.current=a;if(typeof p=="number"){clearTimeout(p);p=null;A=T=0}b.options.onChange(b.getCurrent());ia(true)};b.next=function(){b.change(b.current+1)};b.previous=function(){b.change(b.current-1)};b.setDimensions=function(a,d,c,e,f,g,h,k){var j=a,i=d,o=2*h+f;a+o>c&&(a=c-o);var m=2*h+g;d+m>e&&(d=e-m);var n=(j-a)/j,l=(i-d)/i,p=n>0||l>0;k&&p&&(n>l?d=Math.round(i/j*a):l>
 n&&(a=Math.round(j/i*d)));b.dimensions={height:a+f,width:d+g,innerHeight:a,innerWidth:d,top:Math.floor((c-(a+o))/2+h),left:Math.floor((e-(d+m))/2+h),oversized:p};return b.dimensions};b.makeGallery=function(a){var d=[],c=-1;typeof a=="string"&&(a=[a]);if(typeof a.length=="number"){r(a,function(a,c){d[a]=c.content?c:{content:c}});c=0}else{if(a.tagName)var e=b.getCache(a),a=e?e:b.makeObject(a);if(a.gallery){var d=[],f;for(f in b.cache){e=b.cache[f];if(e.gallery&&e.gallery==a.gallery){if(c==-1&&e.content==
-a.content)c=d.length;d.push(e)}}if(c==-1){d.unshift(a);c=0}}else{d=[a];c=0}}r(d,function(a,c){d[a]=x({},c)});return[d,c]};b.makeObject=function(a,d){var c={content:a.href,title:a.getAttribute("title")||"",owner:a.getAttribute("data-owner_name")||"",owner_url:a.getAttribute("data-owner_url")||"",owner_id:a.getAttribute("data-owner_id")||"",permalink:a.getAttribute("data-permalink")||"",views:a.getAttribute("data-views")||"",link:a};if(d){d=x({},d);r(["player","title","height","width","gallery"],function(a,
+a.content)c=d.length;d.push(e)}}if(c==-1){d.unshift(a);c=0}}else{d=[a];c=0}}r(d,function(a,c){d[a]=x({},c)});return[d,c]};b.makeObject=function(a,d){var c={content:a.href,title:a.getAttribute("title")||"",owner:a.getAttribute("data-owner_name")||"",owner_url:a.getAttribute("data-owner_url")||"",owner_id:a.getAttribute("data-owner_id")||"",permalink:a.getAttribute("data-permalink")||"",licenseHTML:flickrbrowsr.getLicenseHTML(a.getAttribute("data-license")),views:a.getAttribute("data-views")||"",link:a};if(d){d=x({},d);r(["player","title","height","width","gallery"],function(a,
 b){if(typeof d[b]!="undefined"){c[b]=d[b];delete d[b]}});c.options=d}else c.options={};if(!c.player)c.player=b.getPlayer(c.content);var e=a.getAttribute("rel");if(e){var f=e.match(Ja);if(f)c.gallery=escape(f[2]);r(e.split(";"),function(a,d){(f=d.match(Ka))&&(c[f[1]]=f[2])})}return c};b.getPlayer=function(a){if(a.indexOf("#")>-1&&a.indexOf(document.location.href)==0)return"inline";var d=a.indexOf("?");d>-1&&(a=a.substring(0,d));var c;(a=a.match(La))&&(c=a[0].toLowerCase());if(c){if(b.img&&b.img.ext.indexOf(c)>
 -1)return"img";if(b.swf&&b.swf.ext.indexOf(c)>-1)return"swf";if(b.flv&&b.flv.ext.indexOf(c)>-1)return"flv";if(b.qt&&b.qt.ext.indexOf(c)>-1)return b.wmp&&b.wmp.ext.indexOf(c)>-1?"qtwmp":"qt";if(b.wmp&&b.wmp.ext.indexOf(c)>-1)return"wmp"}return"iframe"};Array.prototype.indexOf||(Array.prototype.indexOf=function(a,d){var c=this.length>>>0,d=d||0;for(d<0&&(d=d+c);d<c;++d)if(d in this&&this[d]===a)return d;return-1});var U=!0,V=!0,Na=/opacity=([^)]*)/,wa=document.defaultView&&document.defaultView.getComputedStyle;
 b.getStyle=function(a,d){var c;if(!U&&d=="opacity"&&a.currentStyle){c=Na.test(a.currentStyle.filter||"")?parseFloat(RegExp.$1)/100+"":"";return c===""?"1":c}if(wa){var b=wa(a,null);b&&(c=b[d]);d=="opacity"&&c==""&&(c="1")}else c=a.currentStyle[d];return c};b.appendHTML=function(a,d){if(a.insertAdjacentHTML)a.insertAdjacentHTML("BeforeEnd",d);else if(a.lastChild){var c=a.ownerDocument.createRange();c.setStartAfter(a.lastChild);c=c.createContextualFragment(d);a.appendChild(c)}else a.innerHTML=d};b.getWindowSize=
@@ -65,12 +65,12 @@ var a=["position:absolute","cursor:"+(b.isGecko?"-moz-grab":"move"),"background-
 options:{animSequence:"sync",counterLimit:10,counterType:"default",displayCounter:!0,displayNav:!0,fadeDuration:0.35,initialHeight:160,initialWidth:320,modal:!1,overlayColor:"#000",overlayOpacity:0.5,resizeDuration:0.35,showOverlay:!0,troubleElements:["select","object","embed","canvas"]},init:function(){b.appendHTML(document.body,ka(J.markup,b.lang));J.body=n("sb-body-inner");u=n("sb-container");z=n("sb-overlay");D=n("sb-wrapper");if(!V)u.style.position="absolute";if(!U){var a,d,c=/url\("(.*\.png)"\)/;
 r(Sa,function(e,g){if(a=n(g))if(d=b.getStyle(a,"backgroundImage").match(c)){a.style.backgroundImage="none";a.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true,src="+d[1]+",sizingMethod=scale);"}})}var e;B(F,"resize",function(){if(e){clearTimeout(e);e=null}q&&(e=setTimeout(J.onWindowResize,10))})},onOpen:function(a,d){ha=false;u.style.display="block";ra();var c=ba(b.options.initialHeight,b.options.initialWidth);N(c.innerHeight,c.top);O(c.width,c.left);if(b.options.showOverlay){z.style.backgroundColor=
 b.options.overlayColor;b.setOpacity(z,0);b.options.modal||B(z,"click",b.close);ga=true}if(!V){$();B(F,"scroll",$)}sa();u.style.visibility="visible";ga?s(z,"opacity",b.options.overlayOpacity,b.options.fadeDuration,d):d()},onLoad:function(a,d){for(ta(true);J.body.firstChild;){var c=J.body.firstChild;c.parentNode.removeChild(c)}n("sb-title");var c=n("sb-info").offsetHeight,e=n("sb-title-inner"),f=n("sb-info-inner"),g=a?0.35:0;s(e,"marginTop",0,g);s(f,"marginTop",c*-1,g,function(){e.style.visibility=
-f.style.visibility="hidden";if(q){if(!a)D.style.visibility="visible";var c=b.getCurrent(),g='<span class="title-secondline">By <a target="_blank" href="'+c.owner_url+'">'+c.owner+"</a> &middot; "+c.views+' views &middot; <a href="#q='+c.owner_id+'&type=user">More by '+c.owner+"</a></span>";n("sb-title-inner").innerHTML='<a target="_blank" href="'+c.permalink+'">'+c.title+"</a>"+g||"";var j,i,m,l;if(b.options.displayNav){g=true;c=b.gallery.length;if(c>1)if(b.options.continuous)j=l=true;else{j=c-1>
+f.style.visibility="hidden";if(q){if(!a)D.style.visibility="visible";var c=b.getCurrent(),g='<div class="title-secondline">By <a target="_blank" href="'+c.owner_url+'">'+c.owner+"</a> &middot; "+c.views+' views &middot; <a href="#q='+c.owner_id+'&type=user">More by '+c.owner+"</a> "+c.licenseHTML+"</div>";n("sb-title-inner").innerHTML='<a target="_blank" href="'+c.permalink+'">'+c.title+"</a>"+g||"";var j,i,m,l;if(b.options.displayNav){g=true;c=b.gallery.length;if(c>1)if(b.options.continuous)j=l=true;else{j=c-1>
 b.current;l=b.current>0}if(b.options.slideshowDelay>0&&b.hasNext()){m=!b.isPaused();i=!m}}else g=j=i=m=l=false;y("close",g);y("next",j);y("play",i);y("pause",m);y("previous",l);j="";if(b.options.displayCounter&&b.gallery.length>1){c=b.gallery.length;if(b.options.counterType=="skip"){i=0;l=c;m=parseInt(b.options.counterLimit)||0;if(m<c&&m>2){l=Math.floor(m/2);i=b.current-l;i<0&&(i=i+c);l=b.current+(m-l);l>c&&(l=l-c)}for(;i!=l;){i==c&&(i=0);j=j+('<a onclick="Shadowbox.change('+i+');"');i==b.current&&
 (j=j+' class="sb-counter-current"');j=j+(">"+ ++i+"</a>")}}else j=[b.current+1,b.lang.of,c].join(" ")}n("sb-counter").innerHTML=j;d()}})},onReady:function(a){if(q){var d=b.player,c=ba(d.height,d.width),e=function(){var b=n("sb-title-inner"),c=n("sb-info-inner");b.style.visibility=c.style.visibility="";b.innerHTML!=""&&s(b,"marginTop",0,0.35);s(c,"marginTop",0,0.35,a)};switch(b.options.animSequence){case "hw":N(c.innerHeight,c.top,true,function(){O(c.width,c.left,true,e)});break;case "wh":O(c.width,
 c.left,true,function(){N(c.innerHeight,c.top,true,e)});break;default:O(c.width,c.left,true);N(c.innerHeight,c.top,true,e)}}},onShow:function(a){ta(false,a);ha=true},onClose:function(){V||G(F,"scroll",$);G(z,"click",b.close);D.style.visibility="hidden";var a=function(){u.style.visibility="hidden";u.style.display="none";sa(true)};ga?s(z,"opacity",0,b.options.fadeDuration,a):a()},onPlay:function(){y("play",false);y("pause",true)},onPause:function(){y("pause",false);y("play",true)},onWindowResize:function(){if(ha){ra();
 var a=b.player,d=ba(a.height,a.width);O(d.width,d.left);N(d.innerHeight,d.top);if(a.onWindowResize)a.onWindowResize()}}};b.skin=J;F.Shadowbox=b})(window);
- 
+
  
  
  
@@ -234,9 +234,11 @@ var flickrbrowsr = (function() {
 		per_page = 50,
 		offset = -600,
 		format = 'json',
-		extras = 'owner_name,views,url_c,url_t,url_z,url_b',
+		extras = 'owner_name,views,url_c,url_t,url_z,url_l,url_m,url_o,url_sq,license',
 		semaphore = 1, 
 		done = 0,
+        licenseimgs,
+        licenseinfo = {},
 		$window = $(window),
 		$windowwidth = $window.width(),
 		$body = $('body'),
@@ -247,8 +249,27 @@ var flickrbrowsr = (function() {
 		$userinfo = $('#userinfo'),
 		$footer = $('#footer'),
 		$inputhint = $('.inputhint');
-	
+
+  	licenseimgs = {
+                  0:'&copy;',
+                  1:'bna',
+                  2:'bn',
+                  3:'bnd',
+                  4:'b',
+                  5:'ba',
+                  6:'bd',
+                  7:'p',
+                  8:'usa.gov'
+                };
+
 	return {
+        init: function() {
+          	this.getLicenses();
+            $(window).hashchange(function() { 
+              flickrbrowsr.run(); 
+            });
+          	flickrbrowsr.run();
+        },
 		setup: function(args) {
 			this.reset();
 			
@@ -279,7 +300,7 @@ var flickrbrowsr = (function() {
 					this.loadphotos();
 					break;
 			}
-			
+
 
 		},
 		reset: function() {
@@ -292,7 +313,8 @@ var flickrbrowsr = (function() {
 			Shadowbox.clearCache();
 			this.stickyfooter();
 			
-			var to_get_photo_width = $("<a class='photo'></a>").hide().appendTo("body");
+			var to_get_photo_width = $("<a class='photo'></a>").
+                					 hide().appendTo("body");
 			photo_width = to_get_photo_width.css("width").replace(/[^\d]/g, "");
 			to_get_photo_width.remove();
 			
@@ -309,7 +331,7 @@ var flickrbrowsr = (function() {
 						$header.removeClass('overlay');
 					}
 				});
-				
+
 			});
 		},
 		run: function() {
@@ -321,9 +343,11 @@ var flickrbrowsr = (function() {
 				temp,
 				hasharray = [], 
 				hashkeys = {};
-				
-			hash = window.location.hash.replace('#', '');
+
+			console.log('run');
+          	hash = window.location.hash.replace('#', '');
 			if(!hash) {
+				this.home();
 				return;
 			}
 			
@@ -407,7 +431,8 @@ var flickrbrowsr = (function() {
 				userinfo.photos = '<a href="#q='+data.path_alias+'&type=user">'+data.photos.count._content+' photos</a>';
 				
 				$userinfo.html('<img src="'+userinfo.thumbnail+'" alt="" /><div class="details">'+userinfo.name+' '+userinfo.photos+'</div>');
-				this.getPhotosetsOfUser(data.nsid);
+				$userinfo.attr('data-infoid', data.nsid);
+              	this.getPhotosetsOfUser(data.nsid);
 				this.getGalleriesOfUser(data.nsid);
 				this.getCollectionsOfUser(data.nsid);
 				this.getGroupsOfUser(data.nsid);
@@ -638,6 +663,17 @@ var flickrbrowsr = (function() {
 						extras: extras,
 						jsoncallback: 'flickrbrowsr.appendPhotos'
 					});
+				} else if(params.type == 'tags') {
+					flickrapi.callMethod({
+						method: 'flickr.photos.search',
+						tags: params.query,
+						sort: params.sort,
+						per_page: per_page,
+						page:page,
+						format: format,
+						extras: extras,
+						jsoncallback: 'flickrbrowsr.appendPhotos'
+					});
 				} else if(params.type == 'photoset') {
 					flickrapi.callMethod({
 						method: 'flickr.photosets.getPhotos',
@@ -714,14 +750,16 @@ var flickrbrowsr = (function() {
 				photo.server + "/" + photo.id + "_" + photo.secret + "_" + "b.jpg";
 			  full_url = photo.url_c ? b_url : photo.url_z; // Since there is no checking for url_b, making an assumption here.
 			  full_url = full_url || t_url; // In case there is no url_z.
-			  
+			  full_url = photo.url_l || photo.url_o || photo.url_z || photo.url_m || full_url;
+              photo.title = photo.title || 'Untitled';
+
 			  img_width = photo_width;
 			  img_height = parseInt(photo_width*photo.height_t/photo.width_t);
 			  if(!photoowner) { photoowner = photo.owner; }
 			  permalink = "http://www.flickr.com/photos/" + photoowner + "/" + photo.id;
 			  owner_url = "http://www.flickr.com/photos/" + photoowner;
-			  s +=  '<a rel="shadowbox[flickr]" data-owner_name="'+photo.ownername+'" data-views="'+photo.views+'" data-permalink="'+permalink+'" data-owner_id="'+photoowner+'" data-owner_url="'+owner_url+'" class="photo noopacity" title="'+ photo.title.replace(/"/g, "&quot;").replace(/>/g, "&gt;").replace(/</g, "&lt;") + 
-				'" href="' + full_url + '">' + '<img alt="'+ photo.title + 
+			  s +=  '<a rel="shadowbox[flickr]" data-owner_name="'+photo.ownername+'" data-views="'+photo.views+'" data-license="'+photo.license+'" data-permalink="'+permalink+'" data-owner_id="'+photoowner+'" data-owner_url="'+owner_url+'" class="photo noopacity" title="'+ this.htmlSafe(photo.title) + 
+				'" href="' + full_url + '">' + '<img alt="'+ this.htmlSafe(photo.title) + 
 				'" src="' + t_url + '" width="'+img_width+'" height="'+img_height+'"/>' + '<span>'+photo.title+'</span></a>';
 				
 			  if(photo.owner) { photoowner = ''; }
@@ -730,7 +768,7 @@ var flickrbrowsr = (function() {
 			//document.getElementById('container').innerHTML = document.getElementById('container').innerHTML + s;
 			var $newElems = $(s);
 			$container.append($newElems);
-			
+
 
 			 Shadowbox.setup($newElems, {
 				gallery: "flickr",
@@ -758,6 +796,192 @@ var flickrbrowsr = (function() {
 			that.doneLoadingImgs();
 			
 		},
+		home: function() {
+			var default_html = '<h1><span style="color: #0063DC;">Flick</span><span style="color: #FF0084;">r</span> is the best photo management site on the internet!</h1>';
+			default_html += '<div class="clearfix"></div>'
+			default_html += '<div id="sidebar">'
+			default_html += '<div class="sideblock">'
+            default_html += '<a href="http://www.flickr.com/services/api/" target="_blank" class="apilink"><span>Build apps with</span>Flickr API <span>or find apps in the App Garden</span></a>'
+			default_html += '<a href="http://blog.flickr.net/" class="imglink" target="_blank"><img src="http://flickrtheblog.files.wordpress.com/2008/11/flickblog_logo.gif" alt=""></a>'
+			default_html += '<a href="http://code.flickr.com/" class="imglink" target="_blank"><img src="http://flickrcode.files.wordpress.com/2012/09/code-flickr-com-drawn-header-grey-large.png" alt="" width="160px"></a>'
+			default_html += '<h2>Flickr is mobile</h2>'
+			default_html += '<div class="mobileapp"><a target="_blank" title="Flickr for Android" href="http://flickr.com/android/"><img alt="" src="http://l.yimg.com/g/images/android.jpg" width="160"></a><h3><a target="_blank" href="http://flickr.com/android/">Flickr for Android</a></h3></div>'
+			default_html += '<div class="mobileapp"><a target="_blank" title="Flickr for iPhone" href="http://itunes.apple.com/us/app/flickr/id328407587"><img alt="" src="http://l.yimg.com/g/images/iphone.jpg" width="160"></a><h3><a target="_blank" href="http://itunes.apple.com/us/app/flickr/id328407587">Flickr for iPhone</a></h3></div>'
+			default_html += '<div class="mobileapp"><a target="_blank" title="Flickr for Windows Phone" href="http://www.windowsphone.com/en-us/store/app/flickr/2e49fb07-592b-e011-854c-00237de2db9e"><img alt="" src="http://l.yimg.com/g/images/windows.jpg" width="160"></a><h3><a target="_blank" href="http://www.windowsphone.com/en-us/store/app/flickr/2e49fb07-592b-e011-854c-00237de2db9e">Flickr for Windows Phone</a></h3></div>'
+			default_html += '<div class="mobileapp"><a target="_blank" title="m.flickr.com" href="http://m.flickr.com"><img alt="" src="http://l.yimg.com/g/images/mflickr.jpg" width="160"></a><h3><a target="_blank" href="http://m.flickr.com">m.flickr.com</a></h3></div>'
+			default_html += '<div class="mobileapp"><a target="_blank" title="Upload via email" href="http://www.flickr.com/account/uploadbyemail/"><img alt="" src="http://l.yimg.com/g/images/yahoomail.jpg" width="160"></a><h3><a target="_blank" href="http://www.flickr.com/account/uploadbyemail/">Upload via email</a></h3></div>'
+			default_html += '</div>'
+			default_html += '<div class="sideblock">'
+			default_html += '<h2>Hot Tags</h2><div id="hm_tags"></div>'
+			default_html += '</div>'
+			default_html += '</div>'
+			default_html += '<div id="primary">'
+			default_html += '<h2 class="h2_interestingness">Interesting Photos</h2><div id="hm_interestingness"></div>'
+			default_html += '<h2>Groups</h2><div id="hm_groups"></div>'
+			default_html += '<h2>Photosets</h2><div id="hm_sets"></div>'
+			default_html += '<h2>Galleries</h2><div id="hm_galleries"></div>'
+			default_html += '<h2>People</h2><div id="hm_people"></div>'
+			default_html += '</div>'
+			$container.html(default_html);
+
+			
+			this.homeInterestingness();
+
+          	this.homeTags();
+
+		},
+		homeInterestingness: function(data) {
+			var photo,
+				photoowner,
+				t_url,
+				b_url,
+				full_url,
+				permalink,
+				owner_url,
+				s="",
+				that = this;
+
+			if(typeof data != 'object') {
+
+			  var randomize_html = '<a title="Show another random date" href="#" onclick="flickrbrowsr.homeInterestingness();return false;">&larr;<br>&rarr;</a>';
+              var random_date = this.randomDate(new Date('2005 01 01'), new Date());
+
+              flickrapi.callMethod({
+                  method: 'flickr.interestingness.getList',
+                  format: 'json',
+                  date: random_date.getFullYear() + '-' + this.padNumber((random_date.getMonth())+1, 2) + '-' + this.padNumber(random_date.getDate(), 2),
+                  extras: extras,
+                  per_page: '60',
+                  jsoncallback: 'flickrbrowsr.homeInterestingness'
+              });
+              $container.find('.h2_interestingness').html('Interesting photos from <span>' + random_date.toDateString() + '</span>').
+                		append(randomize_html);
+              $container.find('#hm_interestingness').html('').addClass('loading');
+
+        	} else {
+
+              if(data.stat != 'ok') {
+                  that.doneLoadingImgs();
+                  done=1;
+                  this.throwError(data.message);
+                  return;
+              }
+              var photodata = data.photos;
+              var photoslength = photodata.photo.length;
+              if(photoslength < 1) { $statusbar.addClass('msg').html('No more photos to show.'); done = 1; semaphore = 1; return; }
+              for (var i=0; i < photoslength; i++) {
+                photo = photodata.photo[i];
+                t_url = "http://farm" + photo.farm + ".static.flickr.com/" + 
+                  photo.server + "/" + photo.id + "_" + photo.secret + "_" + ($windowwidth > 500 ? "n.jpg" : "q.jpg");
+                b_url = "http://farm" + photo.farm + ".static.flickr.com/" + 
+                  photo.server + "/" + photo.id + "_" + photo.secret + "_" + "b.jpg";
+                full_url = photo.url_c ? b_url : photo.url_z; // Since there is no checking for url_b, making an assumption here.
+                full_url = full_url || t_url; // In case there is no url_z.
+                full_url = photo.url_l || photo.url_o || photo.url_z || photo.url_m || full_url;
+                photoowner = photo.owner;
+                photo.title = photo.title || 'Untitled';
+                permalink = "http://www.flickr.com/photos/" + photoowner + "/" + photo.id;
+                owner_url = "http://www.flickr.com/photos/" + photoowner;
+                s +=  '<a rel="shadowbox[flickr]" data-owner_name="'+photo.ownername+'" data-views="'+photo.views+'" data-license="'+photo.license+'" data-permalink="'+permalink+'" data-owner_id="'+photoowner+'" data-owner_url="'+owner_url+'" class="" title="'+ this.htmlSafe(photo.title) + 
+                  '" href="' + full_url + '">' + '<img alt="'+ this.htmlSafe(photo.title) + 
+                  '" src="' + photo.url_sq + '" width="75px" height="75px" />' + '</a>';
+  
+              }
+              var $newElems = $(s);
+              $container.find('#hm_interestingness').removeClass('loading').html($newElems);
+              
+              Shadowbox.setup($newElems, {
+                  gallery: "flickr",
+                  overlayOpacity: 0.93,
+                  overlayColor:'#000'
+              });
+
+			}
+		},
+        homeTags: function(data) {
+			var tag,
+                s = "";
+
+			if(typeof data != 'object') {
+
+              flickrapi.callMethod({
+                  method: 'flickr.tags.getHotList',
+                  format: 'json',
+                  period: 'week',
+                  jsoncallback: 'flickrbrowsr.homeTags'
+              });
+
+            } else {
+
+              if(data.stat != 'ok') {
+                  return;
+              }
+              var tagdata = data.hottags;
+              var tagslength = tagdata.tag.length;
+  
+              for (var i=0; i < tagslength; i++) {
+                  tag = tagdata.tag[i];
+                  s +=  '<a href="#q='+tag._content+'&type=search">'+tag._content+'</a>';
+  
+              }
+              $container.find('#hm_tags').html(s);
+            }
+
+        },
+        getLicenses: function(data) {
+			var currentlicense;
+
+          	if(typeof data != 'object') {
+                flickrapi.callMethod({
+                    method: 'flickr.photos.licenses.getInfo',
+                    format: 'json',
+                    jsoncallback: 'flickrbrowsr.getLicenses'
+                });
+            } else {
+				if(data.stat != 'ok') {
+					this.throwError(data.message);
+					return;
+				}
+
+              	var licenses = data.licenses;
+              	var licenseslength = licenses.license.length;
+              	for(var i= 0;i<licenseslength; i++) {
+					currentlicense = licenses.license[i];
+                  	licenseinfo[currentlicense.id] = currentlicense;
+                }
+
+            }
+
+        },
+        getLicenseHTML: function(id) {
+          	var classname = 'licenseinfo',
+                s = '';
+
+          	if(isNaN(id)) { return ''; }
+
+          	if(id != 0 && id != 8) {
+				classname += ' cc_icon'
+            }
+          	s += '<span class="'+classname+'" title="'+licenseinfo[id].name+'">'+licenseimgs[id]+'</span>';
+
+            if(licenseinfo[id].url != '') {
+  				s = '<a target="_blank" href="'+licenseinfo[id].url+'">'+s+'</a>';
+            }
+          	return s;
+        },
+		randomDate: function(start, end) {
+			return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+		},
+		padNumber: function(number, pad) {
+			number = number.toString();
+			while(number.length < pad) {
+				number = '0'+number;
+			}
+			return number;
+		},
+        htmlSafe: function(s) {
+          	return s.replace(/"/g, "&quot;").replace(/>/g, "&gt;").replace(/</g, "&lt;");
+        },
 		stickyfooter: function() {
 			if($window.height() < $statusbar.offset().top) {
 				$footer.css({'position':'static'});
@@ -781,7 +1005,7 @@ var flickrbrowsr = (function() {
 })();
  
 $(document).ready(function() {
-	$('.searchtip').css({opacity: 1});
+	$('.searchtip').css({opacity: .7});
 	$('label').click(function() {
 		$('label').removeClass('active');
 		$('.inputhint').html($(this).attr('title'));
@@ -793,7 +1017,7 @@ $(document).ready(function() {
 		$('#searchbox').focus();
 		$('.textbox').change();
 	});
-	
+
 	$('.textbox').bind('keyup focus click change blur',function() {
 		if($(this).val() !='') {
 			$('.inputhint').hide();
@@ -802,8 +1026,8 @@ $(document).ready(function() {
 		}
 	});
 	
-	flickrbrowsr.run();
-	
+	flickrbrowsr.init();
+
 
 			
 	$('#searchform').submit(function() {
@@ -811,8 +1035,7 @@ $(document).ready(function() {
 		return false;
 	});
 	
-	$(window).hashchange(flickrbrowsr.run);
-	
+
 	
 
 	
