@@ -344,8 +344,8 @@ var flickrbrowsr = (function() {
 				hasharray = [], 
 				hashkeys = {};
 
-			console.log('run');
           	hash = window.location.hash.replace('#', '');
+			console.log(hash);
 			if(!hash) {
 				this.home();
 				return;
@@ -704,8 +704,10 @@ var flickrbrowsr = (function() {
 						extras: extras,
 						jsoncallback: 'flickrbrowsr.appendPhotos'
 					});
+				} else if(params.type == 'api') {
+					this.getApiMethodInfo(params.query);
 				} else {
-					
+
 				}
 				page += 1;
 			}
@@ -797,11 +799,11 @@ var flickrbrowsr = (function() {
 			
 		},
 		home: function() {
-			var default_html = '<h1><span style="color: #0063DC;">Flick</span><span style="color: #FF0084;">r</span> is the best photo management site on the internet!</h1>';
+          var default_html = '<h1><a target="_blank" href="http://flickr.com"><span style="color: #0063DC;">Flick</span><span style="color: #FF0084;">r</span></a> is the best photo management site on the internet!</h1>';
 			default_html += '<div class="clearfix"></div>'
 			default_html += '<div id="sidebar">'
 			default_html += '<div class="sideblock">'
-            default_html += '<a href="http://www.flickr.com/services/api/" target="_blank" class="apilink"><span>Build apps with</span>Flickr API <span>or find apps in the App Garden</span></a>'
+            default_html += '<a href="#q=&type=api" class="apilink"><span>Build apps with</span>Flickr API <span>or find apps in the App Garden</span></a>'
 			default_html += '<a href="http://blog.flickr.net/" class="imglink" target="_blank"><img src="http://flickrtheblog.files.wordpress.com/2008/11/flickblog_logo.gif" alt=""></a>'
 			default_html += '<a href="http://code.flickr.com/" class="imglink" target="_blank"><img src="http://flickrcode.files.wordpress.com/2012/09/code-flickr-com-drawn-header-grey-large.png" alt="" width="160px"></a>'
 			default_html += '<h2>Flickr is mobile</h2>'
@@ -812,15 +814,15 @@ var flickrbrowsr = (function() {
 			default_html += '<div class="mobileapp"><a target="_blank" title="Upload via email" href="http://www.flickr.com/account/uploadbyemail/"><img alt="" src="http://l.yimg.com/g/images/yahoomail.jpg" width="160"></a><h3><a target="_blank" href="http://www.flickr.com/account/uploadbyemail/">Upload via email</a></h3></div>'
 			default_html += '</div>'
 			default_html += '<div class="sideblock">'
+			default_html += '<h2>Browse People</h2><div id="hm_people"></div>'
 			default_html += '<h2>Hot Tags</h2><div id="hm_tags"></div>'
 			default_html += '</div>'
 			default_html += '</div>'
 			default_html += '<div id="primary">'
 			default_html += '<h2 class="h2_interestingness">Interesting Photos</h2><div id="hm_interestingness"></div>'
-			default_html += '<h2>Groups</h2><div id="hm_groups"></div>'
-			default_html += '<h2>Photosets</h2><div id="hm_sets"></div>'
-			default_html += '<h2>Galleries</h2><div id="hm_galleries"></div>'
-			default_html += '<h2>People</h2><div id="hm_people"></div>'
+			default_html += '<h2>Browse Photosets</h2><div id="hm_sets"></div>'
+			default_html += '<h2>Browse Galleries</h2><div id="hm_galleries"></div>'
+			default_html += '<h2>Browse Groups</h2><div id="hm_groups"></div>'
 			default_html += '</div>'
 			$container.html(default_html);
 
@@ -839,7 +841,8 @@ var flickrbrowsr = (function() {
 				permalink,
 				owner_url,
 				s="",
-				that = this;
+				that = this,
+                arrOwners = new Array();
 
 			if(typeof data != 'object') {
 
@@ -871,13 +874,7 @@ var flickrbrowsr = (function() {
               if(photoslength < 1) { $statusbar.addClass('msg').html('No more photos to show.'); done = 1; semaphore = 1; return; }
               for (var i=0; i < photoslength; i++) {
                 photo = photodata.photo[i];
-                t_url = "http://farm" + photo.farm + ".static.flickr.com/" + 
-                  photo.server + "/" + photo.id + "_" + photo.secret + "_" + ($windowwidth > 500 ? "n.jpg" : "q.jpg");
-                b_url = "http://farm" + photo.farm + ".static.flickr.com/" + 
-                  photo.server + "/" + photo.id + "_" + photo.secret + "_" + "b.jpg";
-                full_url = photo.url_c ? b_url : photo.url_z; // Since there is no checking for url_b, making an assumption here.
-                full_url = full_url || t_url; // In case there is no url_z.
-                full_url = photo.url_l || photo.url_o || photo.url_z || photo.url_m || full_url;
+                full_url = photo.url_l || photo.url_o || photo.url_z || photo.url_m;
                 photoowner = photo.owner;
                 photo.title = photo.title || 'Untitled';
                 permalink = "http://www.flickr.com/photos/" + photoowner + "/" + photo.id;
@@ -885,11 +882,16 @@ var flickrbrowsr = (function() {
                 s +=  '<a rel="shadowbox[flickr]" data-owner_name="'+photo.ownername+'" data-views="'+photo.views+'" data-license="'+photo.license+'" data-permalink="'+permalink+'" data-owner_id="'+photoowner+'" data-owner_url="'+owner_url+'" class="" title="'+ this.htmlSafe(photo.title) + 
                   '" href="' + full_url + '">' + '<img alt="'+ this.htmlSafe(photo.title) + 
                   '" src="' + photo.url_sq + '" width="75px" height="75px" />' + '</a>';
-  
+
+				arrOwners.push(photoowner);
+                this.homePeople(photoowner);
+				this.homePhotosets(photoowner);
+				this.homeGalleries(photoowner);
+				this.homeGroups(photoowner);
               }
               var $newElems = $(s);
               $container.find('#hm_interestingness').removeClass('loading').html($newElems);
-              
+
               Shadowbox.setup($newElems, {
                   gallery: "flickr",
                   overlayOpacity: 0.93,
@@ -925,6 +927,234 @@ var flickrbrowsr = (function() {
   
               }
               $container.find('#hm_tags').html(s);
+            }
+
+        },
+        homeGalleries: function(input) {
+          	if($container.find('#hm_galleries .gallery').length > 10) {
+            	return;
+          	}
+			if(typeof input != 'object') {
+				flickrapi.callMethod({
+					method: 'flickr.galleries.getList',
+					user_id: arguments[0],
+					format: 'json',
+					jsoncallback: 'flickrbrowsr.homeGalleries'
+				});
+			} else {
+
+              	if(input.stat != 'ok' || input.galleries.total == 0) {
+                  return;
+                }
+				var data = input.galleries;
+
+                var containerhtml = '';
+                var gallery_curr = data.gallery[Math.floor((Math.random()*data.gallery.length))];
+                var gallery_img = "http://farm" + gallery_curr.primary_photo_farm + ".static.flickr.com/" + 
+                  gallery_curr.primary_photo_server + "/" + gallery_curr.primary_photo_id + "_" + gallery_curr.primary_photo_secret + "_" + "s.jpg";
+                containerhtml +='<div class="photoset gallery"><a href="#q='+gallery_curr.url+'&type=gallery" class="setCase"><img src="'+gallery_img+'" alt=""></a>'+
+                  '<a href="#q='+gallery_curr.url+'&type=gallery"><span class="settitle">'+gallery_curr.title._content+'</span><span class="photocount">'+(parseInt(gallery_curr.count_photos)+parseInt(gallery_curr.count_videos))+' photos</span><span class="photocount">'+gallery_curr.count_views+' views</span></a></div>';
+
+              	$container.find('#hm_galleries').append(containerhtml);
+			}
+        },
+        homeGroups: function(input) {
+			if($container.find('#hm_groups .group').length > 15) {
+              return;
+            }
+          	if(typeof input != 'object') {
+				flickrapi.callMethod({
+					method: 'flickr.people.getPublicGroups',
+					user_id: arguments[0],
+					format: 'json',
+					jsoncallback: 'flickrbrowsr.homeGroups'
+				});
+			} else {
+              	if(input.stat != 'ok' || input.groups.group.length == 0) {
+                  return;
+                }
+
+				var data = input.groups;
+
+              	var groupshtml = '';
+                var group_curr = data.group[Math.floor((Math.random()*data.group.length))];
+                var group_img = group_curr.iconserver != 0 ? 
+                  'http://farm'+group_curr.iconfarm+'.staticflickr.com/'+group_curr.iconserver+'/buddyicons/'+group_curr.nsid+'.jpg' : 
+                  'http://www.flickr.com/images/buddyicon.gif';
+                groupshtml += '<div class="group"><a href="#q='+group_curr.nsid+'&type=group"><img src="'+group_img+'" alt=""></a><div class="groupinfo"><a href="#q='+group_curr.nsid+'&type=group">'+group_curr.name+'</a><span class="stats">'+group_curr.pool_count+' photos &middot; '+group_curr.members+' members</span></div></div>';
+                
+                $container.find('#hm_groups').append(groupshtml);
+			}
+        },
+        homePhotosets: function(input) {
+          if($container.find('#hm_sets .photoset').length > 15) {
+            return;
+          }
+          if(typeof input != 'object') {
+				flickrapi.callMethod({
+					method: 'flickr.photosets.getList',
+					user_id: arguments[0],
+					format: 'json',
+					jsoncallback: 'flickrbrowsr.homePhotosets'
+				});
+			} else {
+				if(input.stat != 'ok' || input.photosets.photoset.length == 0) {
+                  return;
+                }
+              	var data = input.photosets;
+                var photosethtml = '';
+                var photoset_curr = data.photoset[Math.floor((Math.random()*data.photoset.length))];
+                var photoset_img = "http://farm" + photoset_curr.farm + ".static.flickr.com/" + 
+                  photoset_curr.server + "/" + photoset_curr.primary + "_" + photoset_curr.secret + "_" + "s.jpg";
+                photosethtml +='<div class="photoset"><a href="#q='+photoset_curr.id+'&type=photoset" class="setCase"><img src="'+photoset_img+'" alt=""></a>'+
+                  '<a href="#q='+photoset_curr.id+'&type=photoset"><span class="settitle">'+photoset_curr.title._content+'</span><span class="photocount">'+photoset_curr.photos+' photos</span></a></div>';
+
+                $container.find('#hm_sets').append(photosethtml);
+			}
+        },
+        homePeople: function(input) {
+          
+          if($container.find('#hm_people .person').length > 10) {
+            return;
+          }
+
+          if(typeof input != 'object') {
+            flickrapi.callMethod({
+              method: 'flickr.people.getInfo',
+              user_id: input,
+              format: 'json',
+              jsoncallback: 'flickrbrowsr.homePeople'
+            });
+
+          } else {
+            
+            if(input.stat != 'ok') {
+              return;
+            }
+            var userinfo = {},
+                data = input.person;
+            userinfo.name = '<a class="name" target="_blank" href="'+data.profileurl._content+'">'+((data.realname && data.realname._content) ? data.realname._content : data.username._content)+'</a>';
+            userinfo.thumbnail = data.iconserver != 0 ? 
+              'http://farm'+data.iconfarm+'.staticflickr.com/'+data.iconserver+'/buddyicons/'+data.nsid+'.jpg' : 
+              'http://www.flickr.com/images/buddyicon.gif';
+            userinfo.thumbnail = '<a href="#q='+data.path_alias+'&type=user">'+'<img src="'+userinfo.thumbnail+'" alt="" />'+'</a>';
+            userinfo.location = data.location ? data.location._content : '';
+            userinfo.photos = '<a href="#q='+data.path_alias+'&type=user">'+data.photos.count._content+' photos</a>';
+            
+            $container.find('#hm_people').append('<div class="person">'+userinfo.thumbnail+'<div class="details">'+userinfo.name+' '+userinfo.photos+'</div></div>');
+            //this.homePeople();
+          }
+
+
+        },
+        getApiMethods: function(data) {
+			var s = '',
+                currentmethod,
+                subheading,
+                currentsubheading;
+
+			$userinfo.html('<a target="_blank" href="http://www.flickr.com/services/api/">API Documentation</a> &middot; '+
+                           '<a target="_blank" href="http://www.flickr.com/services/api/keys/">API Keys</a> &middot; '+
+                           '<a target="_blank" href="http://www.flickr.com/services/">The App Garden</a> &middot; '+
+                           '<a target="_blank" href="http://www.flickr.com/services/api/tos/">Flickr APIs Terms of Use</a> <br>'+
+                           '<a target="_blank" href="http://www.flickr.com/services/developer/">Developer Guide</a> &middot; '+
+                           '<a target="_blank" href="http://www.flickr.com/services/api/misc.overview.html">Overview</a> &middot; '+
+                           '<a target="_blank" href="http://www.flickr.com/services/api/misc.buddyicons.html">Buddy Icons</a> &middot; '+
+                           '<a target="_blank" href="http://www.flickr.com/services/api/misc.encoding.html">Encoding</a> &middot; '+
+                           '<a target="_blank" href="http://www.flickr.com/services/api/misc.urls.html">URLs</a>');
+          	$container.html('<div id="methodlist"></div><div id="methodinfo"></div>');
+
+
+         	if(typeof data != 'object') {
+
+              	flickrapi.callMethod({
+                    method: 'flickr.reflection.getMethods',
+                    format: 'json',
+                    jsoncallback: 'flickrbrowsr.getApiMethods'
+                });
+            } else {
+				if(data.stat != 'ok') {
+					this.throwError(data.message);
+					return;
+				}
+
+              	var methods = data.methods;
+              	var methodslength = methods.method.length;
+
+              	subheading = methods.method[0]._content.split('.')[1];
+              	s += '<h2>'+subheading+'</h2>';
+              	for(var i= 0;i<methodslength; i++) {
+					currentsubheading = methods.method[i]._content.split('.')[1];
+                    if(currentsubheading != subheading) {
+  						subheading = currentsubheading;
+						s += '<h2>'+subheading+'</h2>';
+                    }
+					currentmethod = methods.method[i];
+                  	s += '<a data-method="'+currentmethod._content+'" href="#q='+currentmethod._content+'&type=api">'+currentmethod._content+'</a>';
+                }
+
+              	$container.find('#methodlist').html(s);
+              	$statusbar.hide();
+
+            }
+
+        },
+      	getApiMethodInfo: function(data) {
+			var s = '',
+          		yesno = ['required', 'optional'],
+                readwrite = ['','read', 'write'];
+
+          	if(typeof data != 'object') {
+				this.getApiMethods();
+              	if(data == '') { $container.find('#methodinfo').html('Select a method in the left menu to view details.');return; }
+
+              	flickrapi.callMethod({
+                    method: 'flickr.reflection.getMethodInfo',
+                    method_name: data,
+                    format: 'json',
+                    jsoncallback: 'flickrbrowsr.getApiMethodInfo'
+                });
+            } else {
+				if(data.stat != 'ok') {
+					this.throwError(data.message);
+					return;
+				}
+
+              	$container.find('#methodlist a').removeClass('active');
+              	$container.find('#methodlist a[data-method="'+data.method.name+'"]').addClass('active');
+
+				s += '<h1>'+data.method.name+'</h1>';
+				s += '<p class="desc">'+data.method.description._content+'</p>';
+
+              	s += '<h3>Authentication</h3>';
+				s += '<p>This method ';
+				s += data.method.needslogin ? 'requires <a target="_blank" href="http://www.flickr.com/services/api/auth.oauth.html">authentication</a>' : 'does not require authentication ';
+              	s += data.method.requiredperms ? ' with <em>&lsquo;' + readwrite[data.method.requiredperms]+'&rsquo;</em> permission':'';
+              	s += data.method.needssigning ? ', request must be <em><a target="_blank" href="http://www.flickr.com/services/api/auth.spec.html#signing">signed</a></em> </p>':'</p>';
+
+                if(data.method.response) {
+              		s += '<h3>Example response</h3>';
+                  	s += '<pre>'+this.htmlSafe(data.method.response._content)+'</pre>';
+                }
+              	s += '<h3>Arguments</h3>';
+
+              	s += '<table cellpadding="8" cellspacing="0" border="0">';
+                for(var i=0; i<data.arguments.argument.length; i++) {
+                  	s += '<tr><td class="name">'+data.arguments.argument[i].name+'</td><td>'+yesno[data.arguments.argument[i].optional]+'</td><td>'+data.arguments.argument[i]._content+'</td></tr>';
+                }
+              	s += '</table>';
+
+              	s += '<h3>Errors</h3>';
+
+              	s += '<table cellpadding="8" cellspacing="0" border="0">';
+                for(var i=0; i<data.errors.error.length; i++) {
+                  	s += '<tr><td class="name">'+data.errors.error[i].code+'</td><td>'+data.errors.error[i].message+'</td><td>'+data.errors.error[i]._content+'</td></tr>';
+                }
+              	s += '</table>';
+
+              	$container.find('#methodinfo').html(s);
+              	$container.find('.desc a, table a').each(function() { $(this).attr('href', 'http://www.flickr.com'+$(this).attr('href')).attr('target', '_blank'); });
+
             }
 
         },
@@ -986,7 +1216,7 @@ var flickrbrowsr = (function() {
 			if($window.height() < $statusbar.offset().top) {
 				$footer.css({'position':'static'});
 			} else {
-				$footer.css({'position':'absolute'});
+				//$footer.css({'position':'absolute'});
 			}
 		},
 		jsonItemCount: function(jsonObj)

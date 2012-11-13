@@ -99,6 +99,29 @@ h2 {
 .mobileapp a {
 	color:#ccc;
 }
+.person {
+	overflow:hidden;
+  	margin:0 0 3px 0;
+}
+.person img {
+	float:left;
+}
+.person .details {
+	margin:0 0 0 55px;
+  	font-size:10px;
+}
+.person .details a {
+  	color:#999;
+}
+.person .details .name {
+  	color:#ccc;
+  	display:block;
+  	margin:0 0 5px 0;
+  	font-size:12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 15px;
+}
 #hm_tags a {
 	display:block;
   	padding:0.5em 0.3em;
@@ -118,7 +141,7 @@ h2 {
   	color:#ccc;
   	font-weight:bold;
 }
-#hm_interestingness {
+#hm_interestingness, #hm_sets, #hm_galleries {
 	overflow:hidden;
 }
 #hm_interestingness.loading {
@@ -134,6 +157,60 @@ h2 {
 }
 .h2_interestingness a:hover, #hm_tags a:hover {
 	color:#fff;
+}
+#hm_sets .photoset, #hm_galleries .photoset {
+	margin: 0 0.5em 0.5em 0;
+}
+#methodlist {
+	float:left;
+  	margin: 0 2em 0 0.8em;
+    border-right: 1px solid #555;
+    padding: 0 1em 0 0;
+}
+#methodlist a {
+	display:block;
+  	margin:0.4em 0;
+  	color:#ccc;
+}
+#methodinfo {
+	margin:0 1em;
+}
+#methodinfo h1 {
+	padding:0;
+  	margin:0.5em 0;
+  	color: #FF0084;
+}
+#methodinfo .desc {
+    font-size: 15px;
+    color: #CCC;
+    margin: 0.5em 0 1.5em 0;
+}
+#methodinfo pre {
+  	color: #ccc;
+  	display:inline;
+  	background:#444;
+}
+#methodinfo table {
+	border-left:1px solid #555;
+	border-bottom:1px solid #555;
+}
+#methodinfo td {
+	border-top:1px solid #555;
+	border-right:1px solid #555;
+  	color:#aaa;
+}
+#methodinfo td.name, #methodinfo td a {
+	color:#eee;
+}
+#methodinfo h3 {
+	color: #FF0084;
+}
+#methodinfo p {
+	color:#ccc;
+}
+#methodinfo a {
+  	color:#eee;
+	text-decoration:underline;
 }
 a.photo {
 	width:320px;
@@ -385,7 +462,7 @@ label#lgroups {
 	float:left;
 	margin:1px 1px 0 0;
 	background:#333;
-	width:300px;
+	width:260px;
 	height:50px;
 }
 .group:hover {
@@ -412,9 +489,16 @@ label#lgroups {
 	float:left;
 	margin:0 0 10px 10px;
 }
-.galleries .galleries, .photosets .photosets, .collections .collections, .groups .groups, .contacts .contacts {
+.galleries .galleries, 
+.photosets .photosets, 
+.collections .collections, 
+.groups .groups, 
+.contacts .contacts,
+#methodlist a.active {
 	background:#0063dc;
 	background:#FF0084;
+  	color:#fff;
+  	display: inline-block;
 }
 #footer {
 	color:#999;
