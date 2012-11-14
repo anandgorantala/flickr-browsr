@@ -11,6 +11,10 @@ body, input, select {
 	font-family:"Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Arial, sans-serif;
 	font-size:12px;
 }
+img {
+	opacity:1;
+  	-webkit-transition:opacity 0.5s ease-in;
+}
 a {
 	text-decoration:none;
 	color:#fff;
@@ -141,10 +145,24 @@ h2 {
   	color:#ccc;
   	font-weight:bold;
 }
-#hm_interestingness, #hm_sets, #hm_galleries {
+#hm_interestingness, #hm_sets, #hm_galleries, #hm_groups {
 	overflow:hidden;
+  	margin-bottom:10px;
 }
-#hm_interestingness.loading {
+#hm_galleries, #hm_groups {
+  	float:right;
+  	margin:0 10px;
+}
+#hm_galleries {
+  	width:225px;
+}
+#hm_groups {
+  	width:260px;
+}
+#hm_groups .group {
+	padding:0.5em 0.2em;
+}
+#hm_interestingness.loading, .content.loading, #hm_people.loading {
   	background:url('http://l.yimg.com/g/images/progress/balls-24x12-black.gif') no-repeat center center;
 	min-height:100px;
 }
@@ -160,6 +178,10 @@ h2 {
 }
 #hm_sets .photoset, #hm_galleries .photoset {
 	margin: 0 0.5em 0.5em 0;
+}
+#hm_sets {
+	margin:0 0 525px 0;
+
 }
 #methodlist {
 	float:left;
@@ -189,6 +211,7 @@ h2 {
   	color: #ccc;
   	display:inline;
   	background:#444;
+  	word-wrap: break-word;
 }
 #methodinfo table {
 	border-left:1px solid #555;
@@ -387,7 +410,7 @@ label#lgroups {
 	top: 5px;
 }
 #header.overlay .searchtip {
-	display:none;
+	opacity:0;
 }
 .hidden, #statusbar.hidden {
 	display:none;
@@ -461,15 +484,13 @@ label#lgroups {
 	padding:1em;
 	float:left;
 	margin:1px 1px 0 0;
-	background:#333;
 	width:260px;
 	height:50px;
 }
 .group:hover {
-	background:transparent;
+	background:#333;
 }
 .group a {
-	font-weight:bold;
 	display:block;
 	padding:0 0 0.3em 0;
 }
@@ -478,7 +499,7 @@ label#lgroups {
 	margin:0 5px 0 0;
 }
 .group .stats {
-	color:#ccc;
+	color:#999;
 	font-size:0.9em;
 	display:block;
 }
