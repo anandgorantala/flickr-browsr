@@ -10,15 +10,28 @@
 	<div id="header">
 	<a href="" class="logo">Flickr Browsr</a>
 	<form id="searchform" onSubmit="return false;">
-		<select name="stype1" class="typeselect" id="selecttype">
+		<select name="type" class="typeselect" id="selecttype">
 			<option value="search" title="Search">Search</option>
 			<option value="user" title="Screen name or NSID">User</option>
 			<option value="favorites" title="Screen name or NSID of user">Favorites</option>
-			<option value="gallery" title="Gallery URL">Gallery</option>
-			<option value="group" title="Groups URL">Group</option>
-			<option value="photoset" title="Photoset ID">Photoset</option>
-			<option value="api" title="API Method name">API</option>
+			<option value="gallery" title="Gallery URL or Gallery ID (not the ID from URL)">Gallery</option>
+			<option value="group" title="Groups URL or NSID">Group</option>
+			<option value="photoset" title="Photoset ID from URL">Photoset</option>
+          	<option value="place" title="Place name or Latitude, Longitude">Place</option>
+          	<option value="camera" title="Camera Brand (optional)">Camera</option>
+          	<option value="tags" title="Tags separated by commas">Tags</option>
+			<option value="api" title="API Method name (optional)">API</option>
 		</select>
+		<select name="sort" class="sortselect" id="sort">
+			<option value="interestingness-desc">interestingness-desc</option>
+			<option value="interestingness-asc">interestingness-asc</option>
+			<option value="relevance">relevance</option>
+			<option value="date-posted-desc">date-posted-desc</option>
+			<option value="date-posted-asc">date-posted-asc</option>
+			<option value="date-taken-desc">date-taken-desc</option>
+			<option value="date-taken-asc">date-taken-asc</option>
+		</select>
+
 		<!--<input type="radio" name="stype" id="tsearch" value="search" checked="checked" /><label for="tsearch" id="lsearch" class="active" title="Search">&nbsp;</label>
 		<span class="separator">&middot;</span>
 		<input type="radio" name="stype" id="tuser" value="user" /><label for="tuser" id="luser" title="Screen name or NSID">&nbsp;</label>

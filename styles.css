@@ -8,7 +8,7 @@ body {
 	margin:0;
 }
 body, input, select {
-	font-family:"Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Arial, sans-serif;
+	font-family:"Lucida Sans Unicode", "Lucida Sans", "Helvetica Neue", Arial, sans-serif;
 	font-size:12px;
 }
 img {
@@ -85,6 +85,10 @@ h2 {
     opacity: 0.8;
     margin: 3px 0;
 }
+.prolink {
+	background: #FF0084;
+}
+
 .imglink {
 	background:#fff;
   	text-align:center;
@@ -183,19 +187,33 @@ h2 {
 	margin:0 0 525px 0;
 
 }
+.content {
+	overflow:hidden;
+}
 #methodlist {
-	float:left;
-  	margin: 0 2em 0 0.8em;
-    border-right: 1px solid #555;
+  	margin: 0 0.8em;
     padding: 0 1em 0 0;
+}
+.methodinfo #methodlist {
+	position:fixed;
+  	overflow-x:hidden;
+  	overflow-y:scroll;
+    border-right: 1px solid #555;
+  	padding: 0 2em 0 0.8em;
+  	width:260px;
+  	height:92%;
 }
 #methodlist a {
 	display:block;
   	margin:0.4em 0;
   	color:#ccc;
 }
+.methodgroup {
+	width:260px;
+  	float:left;
+}
 #methodinfo {
-	margin:0 1em;
+	margin:0 1em 0 320px;
 }
 #methodinfo h1 {
 	padding:0;
@@ -287,7 +305,7 @@ a.photo:focus, a.photo:hover {
 	margin:5px 5px 9px 0;
 	border:1px solid #fff;
 	box-shadow:0 0 1px #ccc;
-	width:250px;
+	width:300px;
 	font-size:12px;
 	border-radius:4px;
 	color:#ddd;
@@ -296,7 +314,7 @@ a.photo:focus, a.photo:hover {
 .textbox:focus {
 	outline:0;
 }
-select.typeselect {
+select.typeselect, select.sortselect {
 	color: white;
 	background: #444;
 	border: 0;
@@ -305,6 +323,12 @@ select.typeselect {
 	top: 4px;
 	padding: 0.5em;
 	font-size: 11px;
+}
+select.sortselect {
+	left:auto;
+  	right:4px;
+  	display:none;
+  	border-radius:0 4px 4px 0;
 }
 input[type=radio] {
 	position:absolute;
@@ -417,7 +441,7 @@ label#lgroups {
 }
 #userinfo {
 	float:left;
-	color:#fff;
+	color:#aaa;
 	margin:5px;
 }
 #userinfo img {

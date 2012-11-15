@@ -219,7 +219,7 @@ Shadowbox.init({
 				constructedurl += '&'+key+'='+params[key];
 			}
 			constructedurl += '&callback=?';
-			
+
 			$.getJSON(constructedurl);
 		
 		}
@@ -272,7 +272,7 @@ var flickrbrowsr = (function() {
         },
 		setup: function(args) {
 			this.reset();
-			
+
 			if(!params.view) {
 				this.activateScrollHandler();
 			}
@@ -289,6 +289,9 @@ var flickrbrowsr = (function() {
 							this.loadphotos();
 						}
 					}
+                	break;
+				case 'place':
+
 					break;
 				case 'group':
 					this.lookupGroup(params.query);
@@ -313,8 +316,7 @@ var flickrbrowsr = (function() {
 			$searchtip.hide();
 			Shadowbox.close();
 			Shadowbox.clearCache();
-			this.stickyfooter();
-			
+
 			var to_get_photo_width = $("<a class='photo'></a>").
                 					 hide().appendTo("body");
 			photo_width = to_get_photo_width.css("width").replace(/[^\d]/g, "");
@@ -348,7 +350,7 @@ var flickrbrowsr = (function() {
 
           	hash = window.location.hash.replace('#', '');
 			if(!hash) {
-				this.home();
+              	this.home();
 				return;
 			}
 			
@@ -367,10 +369,11 @@ var flickrbrowsr = (function() {
 			}
 			$statusbar.html('').removeClass('msg').css({display: 'block'});
 			
-			$searchbox.val(query);
+			$searchbox.val(decodeURIComponent(query));
 			$('#selecttype').val(type);
 			$('#selecttype').change();
-			
+			$('#sort').val(sort);
+
 			flickrbrowsr.setup({
 				query:query,
 				type:type,
@@ -390,31 +393,34 @@ var flickrbrowsr = (function() {
 		/*
 		** Gets the user NSID from the username from the URL
 		*/
-		getUser: function(user) {
-			flickrapi.callMethod({
-				method: 'flickr.urls.lookupUser',
-				url: 'http://flickr.com/photos/'+arguments[0],
-				format: 'json',
-				jsoncallback: 'flickrbrowsr.setUserIdFromUser'
-			});
-		},
-		setUserIdFromUser: function(response) {
-			var data = response;
-			if(data.stat == 'ok') {
-				params.user_id = data.user.id;
-				this.getUserInfo(data.user.id);
-				if(!params.view) {
-					this.loadphotos();
-				}
-			} else {
-				this.throwError(data.message);
-			}
+		getUser: function(input) {
+          	if(typeof input != 'object') {
+                flickrapi.callMethod({
+                    method: 'flickr.urls.lookupUser',
+                    url: 'http://flickr.com/photos/'+arguments[0],
+                    format: 'json',
+                    jsoncallback: 'flickrbrowsr.getUser'
+                });
+            } else {
+                var data = input;
+                if(data.stat == 'ok') {
+                    params.user_id = data.user.id;
+                    this.getUserInfo(data.user.id);
+                    if(!params.view) {
+                        this.loadphotos();
+                    }
+                } else {
+                    this.throwError(data.message);
+                }
+            }
+
 		},
 		/*
 		** Get the user info from the NSID and show at the top. Make calls to show collections, photosets, galleries, favorites
 		*/
 		getUserInfo: function(input) {
-			if(typeof input != 'object') {
+			console.log('userinfo');
+          	if(typeof input != 'object') {
 				flickrapi.callMethod({
 					method: 'flickr.people.getInfo',
 					user_id: arguments[0],
@@ -481,7 +487,7 @@ var flickrbrowsr = (function() {
                   tagshtml = 'ALSO TRY ';
                   var tagslength = input.tags.tag.length > 10 ? 10 : input.tags.tag.length;
                   for(var i=0; i<tagslength; i++) {
-					  tagshtml += ' &middot; <a href="#q='+input.tags.tag[i]._content+'&type=search">'+input.tags.tag[i]._content+'</a>';
+					  tagshtml += ' &middot; <a href="#q='+input.tags.tag[i]._content+'&type=search&sort='+params.sort+'">'+input.tags.tag[i]._content+'</a>';
                   }
               }
               $userinfo.html(tagshtml);
@@ -824,7 +830,7 @@ var flickrbrowsr = (function() {
 			}
 			var prevcontainerHTML = document.getElementById('container').innerHTML;
 			//document.getElementById('container').innerHTML = document.getElementById('container').innerHTML + s;
-			var $newElems = $(s);
+			var $newElems = this.htmlWithFadingImgs(s);
 			$container.append($newElems);
 
 
@@ -833,7 +839,6 @@ var flickrbrowsr = (function() {
 				overlayOpacity: 0.93,
 				overlayColor:'#000'
 			});
-			that.stickyfooter();
 			if(prevcontainerHTML != '') {
 				$container.isotope( 'appended', $newElems, true);
 			} else {
@@ -849,7 +854,12 @@ var flickrbrowsr = (function() {
 				$(this).css('height',imgheight);
 			});*/
 			if(Shadowbox.isOpen()) {
-				Shadowbox.gallery = $.map(Shadowbox.cache, function (value) { return value; });
+				Shadowbox.gallery = $.map(
+                                      Shadowbox.cache, 
+                                      function (value) { 
+                                          return value; 
+                                      }
+                					);
 			}
 			if(params.type == 'gallery') {
               	$statusbar.hide();
@@ -860,33 +870,36 @@ var flickrbrowsr = (function() {
 
 		},
 		home: function() {
-          	var default_html = '<h1><a target="_blank" href="http://flickr.com"><span style="color: #0063DC;">Flick</span><span style="color: #FF0084;">r</span></a> is the best photo management site on the internet!</h1>';
-			default_html += '<div class="clearfix"></div>'
-			default_html += '<div id="sidebar">'
-			default_html += '<div class="sideblock">'
-            default_html += '<a href="#q=&type=api" class="apilink"><span>Build apps with</span>Flickr API <span>or find apps in the App Garden</span></a>'
-			default_html += '<a href="http://blog.flickr.net/" class="imglink" target="_blank"><img src="http://flickrtheblog.files.wordpress.com/2008/11/flickblog_logo.gif" alt=""></a>'
-			default_html += '<a href="http://code.flickr.com/" class="imglink" target="_blank"><img src="http://flickrcode.files.wordpress.com/2012/09/code-flickr-com-drawn-header-grey-large.png" alt="" width="160px"></a>'
-			default_html += '<h2>Flickr is mobile</h2>'
-			default_html += '<div class="mobileapp"><a target="_blank" title="Flickr for Android" href="http://flickr.com/android/"><img alt="" src="http://l.yimg.com/g/images/android.jpg" width="160"></a><h3><a target="_blank" href="http://flickr.com/android/">Flickr for Android</a></h3></div>'
-			default_html += '<div class="mobileapp"><a target="_blank" title="Flickr for iPhone" href="http://itunes.apple.com/us/app/flickr/id328407587"><img alt="" src="http://l.yimg.com/g/images/iphone.jpg" width="160"></a><h3><a target="_blank" href="http://itunes.apple.com/us/app/flickr/id328407587">Flickr for iPhone</a></h3></div>'
-			default_html += '<div class="mobileapp"><a target="_blank" title="Flickr for Windows Phone" href="http://www.windowsphone.com/en-us/store/app/flickr/2e49fb07-592b-e011-854c-00237de2db9e"><img alt="" src="http://l.yimg.com/g/images/windows.jpg" width="160"></a><h3><a target="_blank" href="http://www.windowsphone.com/en-us/store/app/flickr/2e49fb07-592b-e011-854c-00237de2db9e">Flickr for Windows Phone</a></h3></div>'
-			default_html += '<div class="mobileapp"><a target="_blank" title="m.flickr.com" href="http://m.flickr.com"><img alt="" src="http://l.yimg.com/g/images/mflickr.jpg" width="160"></a><h3><a target="_blank" href="http://m.flickr.com">m.flickr.com</a></h3></div>'
-			default_html += '<div class="mobileapp"><a target="_blank" title="Upload via email" href="http://www.flickr.com/account/uploadbyemail/"><img alt="" src="http://l.yimg.com/g/images/yahoomail.jpg" width="160"></a><h3><a target="_blank" href="http://www.flickr.com/account/uploadbyemail/">Upload via email</a></h3></div>'
-			default_html += '</div>'
-			default_html += '<div class="sideblock">'
-			default_html += '<h2>Browse People</h2><div id="hm_people" class="loading"></div>'
-			default_html += '<h2>Hot Tags</h2><div id="hm_tags"></div>'
-			default_html += '</div>'
-			default_html += '</div>'
-			default_html += '<div id="primary">'
-			default_html += '<h2 class="h2_interestingness">Interesting Photos</h2><div id="hm_interestingness"></div>'
-			default_html += '<div id="hm_groups"><h2>Browse Groups</h2><div class="content loading"></div></div>'
-			default_html += '<div id="hm_galleries"><h2>Browse Galleries</h2><div class="content loading"></div></div>'
-			default_html += '<div id="hm_sets"><h2>Browse Photosets</h2><div class="content loading"></div></div>'
-			default_html += '</div>'
+          	var default_html = '<h1><a target="_blank" href="http://flickr.com"><span style="color: #0063DC;">Flick</span><span style="color: #FF0084;">r</span></a> is the best photo management site on the internet!</h1>'+
+                				'<div class="clearfix"></div>'+
+              					'<div id="sidebar">'+
+								'<div class="sideblock">'+
+            					'<a href="#type=api" class="apilink"><span>Build apps with the</span>Flickr API <span>or find apps in the App Garden</span></a>';
+            default_html += '<a target="_blank" href="http://www.flickr.com/help/limits/#28" class="apilink prolink"><span>Do more with</span>Flickr Pro </a>';
+			default_html += '<a href="http://blog.flickr.net/" class="imglink" target="_blank"><img src="http://flickrtheblog.files.wordpress.com/2008/11/flickblog_logo.gif" alt=""></a>';
+			default_html += '<a href="http://code.flickr.com/" class="imglink" target="_blank"><img src="http://flickrcode.files.wordpress.com/2012/09/code-flickr-com-drawn-header-grey-large.png" alt="" width="160px"></a>';
+			default_html += '<h2>Flickr is mobile</h2>';
+			default_html += '<div class="mobileapp"><a target="_blank" title="Flickr for Android" href="http://flickr.com/android/"><img alt="" src="http://l.yimg.com/g/images/android.jpg" width="160"></a><h3><a target="_blank" href="http://flickr.com/android/">Flickr for Android</a></h3></div>';
+			default_html += '<div class="mobileapp"><a target="_blank" title="Flickr for iPhone" href="http://itunes.apple.com/us/app/flickr/id328407587"><img alt="" src="http://l.yimg.com/g/images/iphone.jpg" width="160"></a><h3><a target="_blank" href="http://itunes.apple.com/us/app/flickr/id328407587">Flickr for iPhone</a></h3></div>';
+			default_html += '<div class="mobileapp"><a target="_blank" title="Flickr for Windows Phone" href="http://www.windowsphone.com/en-us/store/app/flickr/2e49fb07-592b-e011-854c-00237de2db9e"><img alt="" src="http://l.yimg.com/g/images/windows.jpg" width="160"></a><h3><a target="_blank" href="http://www.windowsphone.com/en-us/store/app/flickr/2e49fb07-592b-e011-854c-00237de2db9e">Flickr for Windows Phone</a></h3></div>';
+			default_html += '<div class="mobileapp"><a target="_blank" title="m.flickr.com" href="http://m.flickr.com"><img alt="" src="http://l.yimg.com/g/images/mflickr.jpg" width="160"></a><h3><a target="_blank" href="http://m.flickr.com">m.flickr.com</a></h3></div>';
+			default_html += '<div class="mobileapp"><a target="_blank" title="Upload via email" href="http://www.flickr.com/account/uploadbyemail/"><img alt="" src="http://l.yimg.com/g/images/yahoomail.jpg" width="160"></a><h3><a target="_blank" href="http://www.flickr.com/account/uploadbyemail/">Upload via email</a></h3></div>';
+			default_html += '</div>';
+			default_html += '<div class="sideblock">';
+			default_html += '<h2>Browse People</h2><div id="hm_people" class="loading"></div>';
+			default_html += '<h2>Hot Tags</h2><div id="hm_tags"></div>';
+			default_html += '</div>';
+			default_html += '</div>';
+			default_html += '<div id="primary">';
+			default_html += '<h2 class="h2_interestingness">Interesting Photos</h2><div id="hm_interestingness"></div>';
+			default_html += '<div id="hm_groups"><h2>Browse Groups</h2><div class="content loading"></div></div>';
+			default_html += '<div id="hm_galleries"><h2>Browse Galleries</h2><div class="content loading"></div></div>';
+			default_html += '<div id="hm_sets"><h2>Browse Photosets</h2><div class="content loading"></div></div>';
+			default_html += '</div>';
 			$container.html(this.htmlWithFadingImgs(default_html));
 
+          	$searchbox.val('');
+          	$('#selecttype').val('search')
 			
 			this.homeInterestingness();
 
@@ -987,7 +1000,7 @@ var flickrbrowsr = (function() {
                   s +=  '<a href="#q='+tag._content+'&type=search">'+tag._content+'</a>';
   
               }
-              $container.find('#hm_tags').html(s);
+              $container.find('#hm_tags').removeClass('loading').html(s);
             }
 
         },
@@ -1128,6 +1141,7 @@ var flickrbrowsr = (function() {
                 subheading,
                 currentsubheading;
 
+          	$container.html('<div id="methodlist"></div><div id="methodinfo"></div>');
 			$userinfo.html('<a target="_blank" href="http://www.flickr.com/services/api/">API Documentation</a> &middot; '+
                            '<a target="_blank" href="http://www.flickr.com/services/api/keys/">API Keys</a> &middot; '+
                            '<a target="_blank" href="http://www.flickr.com/services/">The App Garden</a> &middot; '+
@@ -1137,7 +1151,6 @@ var flickrbrowsr = (function() {
                            '<a target="_blank" href="http://www.flickr.com/services/api/misc.buddyicons.html">Buddy Icons</a> &middot; '+
                            '<a target="_blank" href="http://www.flickr.com/services/api/misc.encoding.html">Encoding</a> &middot; '+
                            '<a target="_blank" href="http://www.flickr.com/services/api/misc.urls.html">URLs</a>');
-          	$container.html('<div id="methodlist"></div><div id="methodinfo"></div>');
 
 
          	if(typeof data != 'object') {
@@ -1157,21 +1170,32 @@ var flickrbrowsr = (function() {
               	var methodslength = methods.method.length;
 
               	subheading = methods.method[0]._content.split('.')[1];
+              	s += '<div class="methodgroup">';
               	s += '<h2>'+subheading+'</h2>';
               	for(var i= 0;i<methodslength; i++) {
 					currentsubheading = methods.method[i]._content.split('.')[1];
                     if(currentsubheading != subheading) {
   						subheading = currentsubheading;
-						s += '<h2>'+subheading+'</h2>';
+						s += '</div><div class="methodgroup"><h2>'+subheading+'</h2>';
                     }
 					currentmethod = methods.method[i];
                   	s += '<a data-method="'+currentmethod._content+'" href="#q='+currentmethod._content+'&type=api">'+currentmethod._content+'</a>';
                 }
+              	s += '</div>';
 
               	$container.find('#methodlist').html(s);
+                if(params.query == '') {
+                    $container.find('#methodlist').isotope({
+                        itemSelector : '.methodgroup',
+                        animationEngine: 'css'
+                    });
+                }
               	$statusbar.hide();
 
             }
+
+            done=1;
+            this.doneLoadingImgs();
 
         },
       	getApiMethodInfo: function(data) {
@@ -1181,7 +1205,7 @@ var flickrbrowsr = (function() {
 
           	if(typeof data != 'object') {
 				this.getApiMethods();
-              	if(data == '') { $container.find('#methodinfo').html('Select a method in the left menu to view details.');return; }
+              	if(data == '') { $container.removeClass('methodinfo'); return; }
 
               	flickrapi.callMethod({
                     method: 'flickr.reflection.getMethodInfo',
@@ -1189,6 +1213,7 @@ var flickrbrowsr = (function() {
                     format: 'json',
                     jsoncallback: 'flickrbrowsr.getApiMethodInfo'
                 });
+              	$container.addClass('methodinfo');
             } else {
 				if(data.stat != 'ok') {
 					this.throwError(data.message);
@@ -1196,7 +1221,7 @@ var flickrbrowsr = (function() {
 				}
 
               	$container.find('#methodlist a').removeClass('active');
-              	$container.find('#methodlist a[data-method="'+data.method.name+'"]').addClass('active');
+              	$container.find('#methodlist a[data-method="'+data.method.name+'"]').addClass('active').focus().blur();
 
 				s += '<h1>'+data.method.name+'</h1>';
 				s += '<p class="desc">'+data.method.description._content+'</p>';
@@ -1228,7 +1253,13 @@ var flickrbrowsr = (function() {
               	s += '</table>';
 
               	$container.find('#methodinfo').html(s);
-              	$container.find('.desc a, table a').each(function() { $(this).attr('href', 'http://www.flickr.com'+$(this).attr('href')).attr('target', '_blank'); });
+              	$container.find('.desc a, table a').each(function() { 
+                  if($(this).attr('href').indexOf('http://') != -1) {
+                    $(this).attr('target', '_blank');
+                  } else {
+                  	$(this).attr('href', 'http://www.flickr.com'+$(this).attr('href')).attr('target', '_blank'); 
+                  }
+                });
 
             }
 
@@ -1293,13 +1324,6 @@ var flickrbrowsr = (function() {
 
       		return $html;
     	},
-		stickyfooter: function() {
-			if($window.height() < $statusbar.offset().top) {
-				$footer.css({'position':'static'});
-			} else {
-				//$footer.css({'position':'absolute'});
-			}
-		},
 		jsonItemCount: function(jsonObj)
 		{
 			var count = 0;
@@ -1336,19 +1360,31 @@ $(document).ready(function() {
 			$('.inputhint').fadeIn();
 		}
 	});
-	
-  	$('img').live('load', function(){ console.log($(this)); $(this).css('opacity', 1); });
+
 	flickrbrowsr.init();
 
 
-			
+
 	$('#searchform').submit(function() {
-		window.location.hash = 'q='+$('#searchbox').val()+'&'+'type='+$('#selecttype').val();
+		window.location.hash = $(this).serialize();
 		return false;
+	});
+	$('select.sortselect').change(function() {
+		$(this).parents('form').submit();
+	});
+	$('select.typeselect').change(function() {
+      if($(this).val() != 'search' && $(this).val() != 'tags') {
+		$('select.sortselect').hide()
+        $('select.sortselect').attr('disabled', 'disabled');
+      } else {
+        $('select.sortselect').show();
+        $('select.sortselect').removeAttr('disabled');
+      }
 	});
 
 
-	
+
+
 
 	
 
