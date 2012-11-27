@@ -237,7 +237,6 @@ var flickrbrowsr = (function() {
 		extras = 'owner_name,views,url_c,url_t,url_z,url_l,url_m,url_o,url_sq,license',
 		semaphore = 1, 
 		done = 0,
-        licenseimgs,
         licenseinfo = {},
 		$window = $(window),
 		$windowwidth = $window.width(),
@@ -248,9 +247,8 @@ var flickrbrowsr = (function() {
 		$statusbar = $('#statusbar'),
 		$userinfo = $('#userinfo'),
 		$footer = $('#footer'),
-		$inputhint = $('.inputhint');
-
-  	licenseimgs = {
+		$inputhint = $('.inputhint'),
+  		licenseimgs = {
                   0:'&copy;',
                   1:'bna',
                   2:'bn',
@@ -269,6 +267,18 @@ var flickrbrowsr = (function() {
               flickrbrowsr.run(); 
             });
           	flickrbrowsr.run();
+          	$window.on('scroll', function() {
+				$.throttle(10, function(){
+					var $header = $("#header");
+						
+					if($header.offset().top  > 50) {
+						$header.addClass('overlay');
+					} else {
+						$header.removeClass('overlay');
+					}
+				});
+
+			});
         },
 		setup: function(args) {
 			this.reset();
@@ -308,6 +318,34 @@ var flickrbrowsr = (function() {
 
 
 		},
+        router: function(args) {
+          var methodmap = {
+            	'search': 'flickr.photo.search',
+            	'user': 'flickr.photo.search',
+            	'favorites': 'flickr.photo.search',
+            	'gallery': 'flickr.photo.search',
+            	'group': 'flickr.photo.search',
+            	'photoset': 'flickr.photo.search',
+            	'place': 'flickr.photo.search',
+            	'camera': 'flickr.photo.search',
+            	'tags': 'flickr.photo.search',
+            	'api': 'flickr.photo.search'
+          	},
+          	  querymap = {
+            	'search': 'q',
+            	'user': 'user_id',
+            	'favorites': 'user_id',
+            	'gallery': 'gallery_id',
+            	'group': 'group_id',
+            	'photoset': 'photoset_id',
+            	'place': 'lat,lng',
+            	'camera': 'camera',
+            	'tags': 'tags',
+            	'api': 'method'
+          	};
+
+
+        },
 		reset: function() {
 			page=1;
 			done = 0;
@@ -327,13 +365,6 @@ var flickrbrowsr = (function() {
 			$window.on('scroll', function() {
 				$.throttle(500, function(){
 					flickrbrowsr.loadphotos();
-					var $header = $("#header");
-						
-					if($header.offset().top  > 50) {
-						$header.addClass('overlay');
-					} else {
-						$header.removeClass('overlay');
-					}
 				});
 
 			});
@@ -625,7 +656,7 @@ var flickrbrowsr = (function() {
 									'http://www.flickr.com/images/buddyicon.gif';
 						contactshtml += '<a href="#q='+contact_curr.nsid+'&type=user" class="contact" title="'+contact_curr.username+'"><img src="'+contact_img+'" alt=""></a>';
 					}
-					$container.html(contactshtml);
+					$container.html(this.htmlWithFadingImgs(contactshtml));
 					$statusbar.hide();
 				}
 			}
@@ -836,7 +867,7 @@ var flickrbrowsr = (function() {
 
 			 Shadowbox.setup($newElems, {
 				gallery: "flickr",
-				overlayOpacity: 0.93,
+				overlayOpacity: 1,
 				overlayColor:'#000'
 			});
 			if(prevcontainerHTML != '') {
@@ -872,7 +903,17 @@ var flickrbrowsr = (function() {
 		home: function() {
           	var default_html = '<h1><a target="_blank" href="http://flickr.com"><span style="color: #0063DC;">Flick</span><span style="color: #FF0084;">r</span></a> is the best photo management site on the internet!</h1>'+
                 				'<div class="clearfix"></div>'+
+								'<div id="primary"><div class="primary_inner">'+
+								'<h2 class="h2_interestingness">Interesting Photos</h2><div id="hm_interestingness"></div>'+
+								'<div id="hm_sets"><div class="hmsets_inner"><h2>Browse Photosets</h2><div class="content loading"></div></div></div>'+
+								'<div id="hm_galleries"><h2>Browse Galleries</h2><div class="content loading"></div></div>'+
+								'<div id="hm_groups"><h2>Browse Groups</h2><div class="content loading"></div></div>'+
+								'</div></div>'+
               					'<div id="sidebar">'+
+								'<div class="sideblock">'+
+								'<h2>Browse People</h2><div id="hm_people" class="loading"></div>'+
+								'<h2>Hot Tags</h2><div id="hm_tags"></div>'+
+								'</div>'+
 								'<div class="sideblock">'+
             					'<a href="#type=api" class="apilink"><span>Build apps with the</span>Flickr API <span>or find apps in the App Garden</span></a>';
             default_html += '<a target="_blank" href="http://www.flickr.com/help/limits/#28" class="apilink prolink"><span>Do more with</span>Flickr Pro </a>';
@@ -885,16 +926,6 @@ var flickrbrowsr = (function() {
 			default_html += '<div class="mobileapp"><a target="_blank" title="m.flickr.com" href="http://m.flickr.com"><img alt="" src="http://l.yimg.com/g/images/mflickr.jpg" width="160"></a><h3><a target="_blank" href="http://m.flickr.com">m.flickr.com</a></h3></div>';
 			default_html += '<div class="mobileapp"><a target="_blank" title="Upload via email" href="http://www.flickr.com/account/uploadbyemail/"><img alt="" src="http://l.yimg.com/g/images/yahoomail.jpg" width="160"></a><h3><a target="_blank" href="http://www.flickr.com/account/uploadbyemail/">Upload via email</a></h3></div>';
 			default_html += '</div>';
-			default_html += '<div class="sideblock">';
-			default_html += '<h2>Browse People</h2><div id="hm_people" class="loading"></div>';
-			default_html += '<h2>Hot Tags</h2><div id="hm_tags"></div>';
-			default_html += '</div>';
-			default_html += '</div>';
-			default_html += '<div id="primary">';
-			default_html += '<h2 class="h2_interestingness">Interesting Photos</h2><div id="hm_interestingness"></div>';
-			default_html += '<div id="hm_groups"><h2>Browse Groups</h2><div class="content loading"></div></div>';
-			default_html += '<div id="hm_galleries"><h2>Browse Galleries</h2><div class="content loading"></div></div>';
-			default_html += '<div id="hm_sets"><h2>Browse Photosets</h2><div class="content loading"></div></div>';
 			default_html += '</div>';
 			$container.html(this.htmlWithFadingImgs(default_html));
 
@@ -968,7 +999,7 @@ var flickrbrowsr = (function() {
 
               Shadowbox.setup($newElems, {
                   gallery: "flickr",
-                  overlayOpacity: 0.93,
+                  overlayOpacity: 1,
                   overlayColor:'#000'
               });
 
