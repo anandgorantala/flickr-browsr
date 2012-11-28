@@ -192,7 +192,7 @@ var a=b.player,d=ba(a.height,a.width);O(d.width,d.left);N(d.innerHeight,d.top);i
 
 Shadowbox.init({
 	skipSetup:true,
-	viewportPadding: 40,
+	viewportPadding: $(window).width() > 500 ? 40 : 10,
 	slideshowDelay: 4,
 	displayCounter:false,
 	onChange: function(element) {
@@ -319,7 +319,7 @@ var flickrbrowsr = (function() {
 
 		},
         router: function(args) {
-          var methodmap = {
+			var methodmap = {
             	'search': 'flickr.photo.search',
             	'user': 'flickr.photo.search',
             	'favorites': 'flickr.photo.search',
@@ -331,7 +331,7 @@ var flickrbrowsr = (function() {
             	'tags': 'flickr.photo.search',
             	'api': 'flickr.photo.search'
           	},
-          	  querymap = {
+          	querymap = {
             	'search': 'q',
             	'user': 'user_id',
             	'favorites': 'user_id',
@@ -350,6 +350,7 @@ var flickrbrowsr = (function() {
 			page=1;
 			done = 0;
 			$window.unbind('scroll');
+			this.activateScrollHandler();
 			$container.html('');
 			$searchtip.hide();
 			Shadowbox.close();
@@ -450,8 +451,10 @@ var flickrbrowsr = (function() {
 		** Get the user info from the NSID and show at the top. Make calls to show collections, photosets, galleries, favorites
 		*/
 		getUserInfo: function(input) {
-			console.log('userinfo');
           	if(typeof input != 'object') {
+				//if($userinfo.attr('data-infoid') == input) {
+				//	return;
+				//}
 				flickrapi.callMethod({
 					method: 'flickr.people.getInfo',
 					user_id: arguments[0],
@@ -810,6 +813,7 @@ var flickrbrowsr = (function() {
 				photo,
 				t_url,
 				b_url,
+				thumb_url,
 				full_url,
 				img_width,
 				img_height,
@@ -839,23 +843,25 @@ var flickrbrowsr = (function() {
 			if(photoslength < 1) { $statusbar.addClass('msg').html('No more photos to show.'); done = 1; semaphore = 1; return; }
 			for (var i=0; i < photoslength; i++) {
 			  photo = photodata.photo[i];
+			  
 			  t_url = "http://farm" + photo.farm + ".static.flickr.com/" + 
 				photo.server + "/" + photo.id + "_" + photo.secret + "_" + ($windowwidth > 500 ? "n.jpg" : "q.jpg");
 			  b_url = "http://farm" + photo.farm + ".static.flickr.com/" + 
 				photo.server + "/" + photo.id + "_" + photo.secret + "_" + "b.jpg";
+			  thumb_url = $window.width() > 500 ? t_url : photo.url_sq;
 			  full_url = photo.url_c ? b_url : photo.url_z; // Since there is no checking for url_b, making an assumption here.
 			  full_url = full_url || t_url; // In case there is no url_z.
 			  full_url = photo.url_l || photo.url_o || photo.url_z || photo.url_m || full_url;
               photo.title = photo.title || 'Untitled';
 
-			  img_width = photo_width;
-			  img_height = parseInt(photo_width*photo.height_t/photo.width_t);
+			  img_width = $window.width() > 500 ? photo_width : '75px';
+			  img_height = $window.width() > 500 ? parseInt(photo_width*photo.height_t/photo.width_t) : '75px';
 			  if(!photoowner) { photoowner = photo.owner; }
 			  permalink = "http://www.flickr.com/photos/" + photoowner + "/" + photo.id;
 			  owner_url = "http://www.flickr.com/photos/" + photoowner;
 			  s +=  '<a rel="shadowbox[flickr]" data-owner_name="'+photo.ownername+'" data-views="'+photo.views+'" data-license="'+photo.license+'" data-permalink="'+permalink+'" data-owner_id="'+photoowner+'" data-owner_url="'+owner_url+'" class="photo noopacity" title="'+ this.htmlSafe(photo.title) + 
 				'" href="' + full_url + '">' + '<img alt="'+ this.htmlSafe(photo.title) + 
-				'" src="' + t_url + '" width="'+img_width+'" height="'+img_height+'"/>' + '<span>'+photo.title+'</span></a>';
+				'" src="' + thumb_url + '" width="'+img_width+'" height="'+img_height+'"/>' + '<span>'+photo.title+'</span></a>';
 				
 			  if(photo.owner) { photoowner = ''; }
 			}
@@ -952,7 +958,7 @@ var flickrbrowsr = (function() {
 			if(typeof data != 'object') {
 
 			  var randomize_html = '<a title="Show another random date" href="#" onclick="flickrbrowsr.homeInterestingness();return false;">&larr;<br>&rarr;</a>';
-              var random_date = this.randomDate(new Date('2005 01 01'), new Date());
+              var random_date = this.randomDate(new Date(2005,1,1), new Date());
 
               flickrapi.callMethod({
                   method: 'flickr.interestingness.getList',
@@ -1172,7 +1178,7 @@ var flickrbrowsr = (function() {
                 subheading,
                 currentsubheading;
 
-          	$container.html('<div id="methodlist"></div><div id="methodinfo"></div>');
+          	$container.html('<div id="methodinfo"></div><div id="methodlist"></div>');
 			$userinfo.html('<a target="_blank" href="http://www.flickr.com/services/api/">API Documentation</a> &middot; '+
                            '<a target="_blank" href="http://www.flickr.com/services/api/keys/">API Keys</a> &middot; '+
                            '<a target="_blank" href="http://www.flickr.com/services/">The App Garden</a> &middot; '+
@@ -1253,6 +1259,7 @@ var flickrbrowsr = (function() {
 
               	$container.find('#methodlist a').removeClass('active');
               	$container.find('#methodlist a[data-method="'+data.method.name+'"]').addClass('active').focus().blur();
+				$window.scrollTop(0);
 
 				s += '<h1>'+data.method.name+'</h1>';
 				s += '<p class="desc">'+data.method.description._content+'</p>';
