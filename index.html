@@ -8,15 +8,47 @@
 </head>
 <body>
 	<div id="header">
-	<div class="logo">Flickr Browsr</div>
+	<a href="" class="logo">Flickr Browsr</a>
 	<form id="searchform" onSubmit="return false;">
-		<input type="radio" name="stype" id="tsearch" value="search" checked="checked" /><label for="tsearch" id="lsearch" class="active" title="Search">&nbsp;</label>
+		<select name="type" class="typeselect" id="selecttype">
+			<option value="search" title="Search">Search</option>
+			<option value="user" title="Screen name or NSID">User</option>
+			<option value="favorites" title="Screen name or NSID of user">Favorites</option>
+			<option value="gallery" title="Gallery URL or Gallery ID (not the ID from URL)">Gallery</option>
+			<option value="group" title="Groups URL or NSID">Group</option>
+			<option value="photoset" title="Photoset ID from URL">Photoset</option>
+			<option value="collection" title="Collection ID from URL">Collection</option>
+          	<option value="place" title="Place name or Latitude, Longitude">Place</option>
+          	<option value="camera" title="Camera Brand (optional)">Camera</option>
+          	<option value="tags" title="Tags separated by commas">Tags</option>
+			<option value="api" title="API Method name (optional)">API</option>
+		</select>
+		<select name="sort" class="sortselect" id="sort">
+			<option value="interestingness-desc">interestingness-desc</option>
+			<option value="interestingness-asc">interestingness-asc</option>
+			<option value="relevance">relevance</option>
+			<option value="date-posted-desc">date-posted-desc</option>
+			<option value="date-posted-asc">date-posted-asc</option>
+			<option value="date-taken-desc">date-taken-desc</option>
+			<option value="date-taken-asc">date-taken-asc</option>
+		</select>
+
+		<!--<input type="radio" name="stype" id="tsearch" value="search" checked="checked" /><label for="tsearch" id="lsearch" class="active" title="Search">&nbsp;</label>
 		<span class="separator">&middot;</span>
 		<input type="radio" name="stype" id="tuser" value="user" /><label for="tuser" id="luser" title="Screen name or NSID">&nbsp;</label>
+		<span class="separator">&middot;</span>
+		<input type="radio" name="stype" id="tgallery" value="gallery" /><label for="tgallery" id="lgallery" title="Gallery ID from URL">&nbsp;</label>
+		<span class="separator">&middot;</span>
+		<input type="radio" name="stype" id="tphotoset" value="photoset" /><label for="tphotoset" id="lphotoset" title="Photoset ID">&nbsp;</label>
+		<span class="separator">&middot;</span>
+		<input type="radio" name="stype" id="tgroups" value="groups" /><label for="tgroups" id="lgroups" title="Group name from URL">&nbsp;</label>
+		<span class="separator">&middot;</span>
+		<input type="radio" name="stype" id="tfavorites" value="favorites" /><label for="tfavorites" id="lfavorites" title="Favorites of user screen name or NSID">&nbsp;</label>-->
 		<input type="text" name="q" id="searchbox" class="textbox" />
 		<span class="inputhint">Search</span>
-		<span class="searchtip"><span class="arrowtip"></span>Search for photos or click the user icon to browse by Screen name/ NSID</span>	
+		<span class="searchtip"><span class="arrowtip"></span>Search for photos or select the other options to browse Flickr</span>	
 	</form>
+	<div id="metainfo"></div>
 	<div class="clearfix"></div>
 	</div>
 	<div id="container"></div>
@@ -24,11 +56,18 @@
 	<span id="statusbar"></span>
 	
 	<div id="footer">
-		<p>Designed by <a href="http://arrowconcept.com">Arrowconcept.com</a>. Powered by <a href="http://isotope.metafizzy.co/">Isotope</a>, <a href="http://www.shadowbox-js.com/">Shadowbox</a>. Flickr is a registered trademark of Yahoo Inc.</p>
+		<p>Designed by <a target="_blank" href="http://arrowconcept.com">Arrowconcept.com</a>. Powered by <a target="_blank" href="http://isotope.metafizzy.co/">Isotope</a>, <a target="_blank" href="http://www.shadowbox-js.com/">Shadowbox</a> &amp; the <a target="_blank" href="http://flickr.com/services/api">Flickr API</a>. Flickr is a registered trademark of Yahoo Inc.</p>
 	</div>
   
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
- <script type="text/javascript" src="scripts.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+ <script type="text/javascript" src="js/klass.min.js"></script>
+ <script type="text/javascript" src="js/shadowbox.js"></script>
+ <script type="text/javascript" src="js/isotope.js"></script>
+ <script type="text/javascript" src="js/mustache.js"></script>
+ <script type="text/javascript" src="js/helpers.js"></script>
+ <script type="text/javascript" src="js/models.js"></script>
+ <script type="text/javascript" src="js/controllers.js"></script>
+ <script type="text/javascript" src="js/scripts.js"></script>
 
 
 </body>

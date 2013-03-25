@@ -1,0 +1,53 @@
+<h1>{{method.name}}</h1>
+<a class="exploreapi" target="_blank" href="http://www.flickr.com/services/api/explore/{{method.name}}">Try it out on Flickr API Explorer</a>
+<p class="desc">{{{method.description._content}}}</p>
+
+<h3>Authentication</h3>
+<p>This method
+  {{#method.needslogin}} 
+    requires <a target="_blank" href="http://www.flickr.com/services/api/auth.oauth.html">authentication</a>
+  {{/method.needslogin}}
+
+  {{^method.needslogin}}
+    does not require authentication
+  {{/method.needslogin}}
+
+  {{#method.requiredperms}}
+    with <em>&lsquo;{{method.requiredperms}}&rsquo;</em> permission
+  {{/method.requiredperms}}
+
+  {{#method.needssigning}}
+  request must be <em><a target="_blank" href="http://www.flickr.com/services/api/auth.spec.html#signing">signed</a></em>
+  {{/method.needssigning}}
+
+</p>
+
+{{#method.response}}
+  <h3>Example response</h3>
+  <pre>{{method.response._content}}</pre>
+{{/method.response}}
+<h3>Arguments</h3>
+
+<table cellpadding="8" cellspacing="0" border="0">
+  {{#arguments.argument}}      
+    <tr>
+      <td class="name">{{name}}</td>
+      <td>
+        {{optional}}
+      </td>
+      <td>{{{_content}}}</td>
+    </tr>
+  {{/arguments.argument}}
+</table>
+
+<h3>Errors</h3>
+
+<table cellpadding="8" cellspacing="0" border="0">
+  {{#errors.error}}
+    <tr>
+      <td class="name">{{code}}</td>
+      <td>{{message}}</td>
+      <td>{{{_content}}}</td>
+    </tr>
+  {{/errors.error}}
+</table>

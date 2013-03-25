@@ -1,0 +1,20 @@
+{{#people}}
+
+<div class="{{#photos}}person{{/photos}}{{^photos}}contact{{/photos}}">
+	<a href="#q={{#path_alias}}{{path_alias}}{{/path_alias}}{{^path_alias}}{{nsid}}{{/path_alias}}&amp;type=user" {{^photos}}title="{{username}}"{{/photos}}>
+		<img src="{{#iconserver}}http://farm{{iconfarm}}.staticflickr.com/{{iconserver}}/buddyicons/{{nsid}}.jpg{{/iconserver}}
+	{{^iconserver}}http://www.flickr.com/images/buddyicon.gif{{/iconserver}}" alt="">
+	</a>
+	{{! To use on the contacts page, we show the details only on the home page }}
+	{{#photos}}
+	<div class="details">
+		<a class="name" href="#q={{#path_alias}}{{path_alias}}{{/path_alias}}{{^path_alias}}{{nsid}}{{/path_alias}}&amp;type=user">
+			{{resolvedname}}
+		</a> 
+		<a href="#q={{#path_alias}}{{path_alias}}{{/path_alias}}{{^path_alias}}{{nsid}}{{/path_alias}}&amp;type=user">
+			{{photos.count._content}} photos
+		</a>
+	</div>
+	{{/photos}}
+</div>
+{{/people}}

@@ -1,0 +1,16 @@
+<div class="photoset gallery">
+	<a href="#q={{{url}}}&type=gallery" class="setCase">
+		<img 
+			src="http://farm{{primary_photo_farm}}.static.flickr.com/{{primary_photo_server}}/{{primary_photo_id}}_{{primary_photo_secret}}_s.jpg" 
+			alt="">
+	</a>
+	<a href="#q={{{url}}}&type=gallery">
+		<span class="settitle">{{title._content}}</span>
+		{{#count_photos}}
+			<span class="photocount">
+				{{count_photos}} photos 
+			</span>
+		{{/count_photos}}
+		<span class="photocount">{{count_views}} views</span>
+	</a>
+</div>	

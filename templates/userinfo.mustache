@@ -1,0 +1,58 @@
+<img src="{{#iconserver}}http://farm{{iconfarm}}.staticflickr.com/{{iconserver}}/buddyicons/{{nsid}}.jpg{{/iconserver}}{{^iconserver}}http://www.flickr.com/images/buddyicon.gif{{/iconserver}}" alt="">
+<div class="details">
+	<p class="name">
+		<a target="_blank" href="{{profileurl}}">{{name}}</a>
+		 → 
+	 </p> 
+	 <a class="photos" href="#q={{path_alias}}&amp;type=user">
+	 	{{photos}} photos
+	 </a> 
+ 	 &middot; 
+	 {{#photosets}}
+	 <a class="photosets" href="#q={{nsid}}&amp;type=user&amp;view=photosets">
+	 {{/photosets}}
+	 	{{photosets}} photosets
+	 {{#photosets}}
+	 </a>
+	 {{/photosets}} 
+	 &middot;  
+	 {{#collections}}
+	 <a class="collections" href="#q={{nsid}}&amp;type=user&amp;view=collections">
+	 {{/collections}}
+	 	{{collections}} collections
+	 {{#collections}}
+	 </a> 
+	 {{/collections}}
+	 &middot; 
+	 {{#favorites}}
+	 <a href="#q={{nsid}}&amp;type=favorites" class="favorites">
+	 {{/favorites}}
+	 	{{favorites}} Favorites
+	 {{#favorites}}
+	 </a> 
+	 {{/favorites}}
+	 &middot; 
+	 {{#galleries}}
+	 <a class="galleries" href="#q={{nsid}}&amp;type=user&amp;view=galleries">
+	 {{/galleries}}
+	 	{{galleries}} galleries
+	{{#galleries}}
+	 </a> 
+	{{/galleries}}
+	 &middot; 
+	 {{#groups}}
+	 <a href="#q={{nsid}}&amp;type=user&amp;view=groups" class="groups">
+	 {{/groups}}
+	 	{{groups}} groups
+	 {{#groups}}
+	 </a> 
+	 {{/groups}}
+	 &middot; 
+	 {{#contacts}} 
+	 <a href="#q={{nsid}}&amp;type=user&amp;view=contacts" class="contacts">
+	 {{/contacts}} 
+	 	{{contacts}} contacts
+	 {{#contacts}} 
+	 </a>
+	 {{/contacts}} 
+ </div>
