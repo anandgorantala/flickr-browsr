@@ -21,10 +21,16 @@ Shadowbox.init({
 
 var flickrapi = (function () {
     var api_key = '4d22941636893fd6132c3c3c91554972',
-        api_url = 'http://api.flickr.com/services/rest/';
+        api_url = 'http://api.flickr.com/services/rest/',
+        localCache = {};
 
     return {
         callMethod: function (params) {
+            var cacheKey = JSON.stringify(params);
+            if(localCache[cacheKey]) {
+                params.jsoncallback(localCache[cacheKey]);
+                return;
+            }
             var constructedurl = api_url + '?api_key=' + api_key + '&format=json',
                 key;
             for (key in params) {
@@ -32,6 +38,7 @@ var flickrapi = (function () {
                     constructedurl += '&' + key + '=' + params[key];
                 }
             }
+
 
             $.ajax({
                 url: constructedurl,
@@ -42,6 +49,7 @@ var flickrapi = (function () {
                         flickrbrowsr.throwError(data.message);
                         return;
                     }
+                    localCache[cacheKey] = data;
                     params.jsoncallback(data);
                 },
                 error: function(jqXHR, status, errorThrown) {
@@ -207,7 +215,7 @@ var flickrbrowsr = (function () {
             state.loading = 0;
             DOMCache.$window.unbind('scroll.infinite');
 
-            DOMCache.$container.fadeOut('fast').html('').fadeIn('fast');
+            DOMCache.$container.html('');
             if(params.type != 'home') {
                 DOMCache.$searchtip.hide();
             }
@@ -460,7 +468,7 @@ var flickrbrowsr = (function () {
 
                     if(params.view =='galleries' || options.random) {
                         $.mustache.load('templates/galleries.mustache', function(data, partials) {
-                            options.container.append(Mustache.render(data, gallerydata, partials));
+                            options.container.append(helpers.htmlWithFadingImgs(Mustache.render(data, gallerydata, partials)));
                             DOMCache.$statusbar.hide();
                         }, {'gallery': 'templates/gallery.mustache'});
                         
@@ -498,10 +506,10 @@ var flickrbrowsr = (function () {
                             collection_img = 'collection_default_l.gif';
                         }
                             collectionshtml += '<div class="collection"><a href="#q='+collection_curr.id.split('-')[1]+'&type=collection&user='+params.query+'" class="collCase">'+
-                            '<img src="'+collection_img+'" alt=""></a><a href="#q='+collection_curr.id.split('-')[1]+'&type=collection" class="colldesc">'+
+                            '<img src="'+collection_img+'" alt=""></a><a href="#q='+collection_curr.id.split('-')[1]+'&type=collection&user='+params.query+'" class="colldesc">'+
                             '<span class="colltitle">'+collection_curr.title+'</span><span class="setcount">'+helpers.jsonItemCount(collection_curr.set)+' sets</span></a></div>';
                     }
-                    DOMCache.$container.html(collectionshtml);
+                    DOMCache.$container.html(helpers.htmlWithFadingImgs(collectionshtml));
                     DOMCache.$statusbar.hide();
                 }
             }
