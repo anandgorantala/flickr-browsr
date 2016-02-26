@@ -210,7 +210,7 @@ Shadowbox.init({
 
  var flickrapi = (function () {
 	var api_key = '4d22941636893fd6132c3c3c91554972';
-	var api_url = 'http://api.flickr.com/services/rest/';
+	var api_url = 'https://api.flickr.com/services/rest/';
 	
 	return {
 		callMethod: function(params) {
