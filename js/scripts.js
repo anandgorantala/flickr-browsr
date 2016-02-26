@@ -21,7 +21,7 @@ Shadowbox.init({
 
 var flickrapi = (function () {
     var api_key = '4d22941636893fd6132c3c3c91554972',
-        api_url = 'http://api.flickr.com/services/rest/',
+        api_url = 'https://api.flickr.com/services/rest/',
         localCache = {};
 
     return {
