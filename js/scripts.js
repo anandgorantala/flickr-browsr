@@ -889,11 +889,11 @@ var flickrbrowsr = (function () {
                     date: random_date.getFullYear() + '-' + helpers.padNumber((random_date.getMonth())+1, 2) + '-' + helpers.padNumber(random_date.getDate(), 2),
                     extras: params.extras,
                     per_page: '60',
-                    jsoncallback: 'flickrbrowsr.homeInterestingness'
+                    jsoncallback: flickrbrowsr.homeInterestingness
                 });
-                $container.find('.h2_interestingness').html('Interesting photos from <span>' + random_date.toDateString() + '</span>').
+                DOMCache.$container.find('.h2_interestingness').html('Interesting photos from <span>' + random_date.toDateString() + '</span>').
                 		append(randomize_html);
-                $container.find('#hm_interestingness').html('').addClass('loading');
+                DOMCache.$container.find('#hm_interestingness').html('').addClass('loading');
 
         	} else {
 
@@ -924,7 +924,7 @@ var flickrbrowsr = (function () {
 			  this.homeGalleries(arrOwners.slice());
  			  this.homeGroups(arrOwners.slice());
               var $newElems = helpers.htmlWithFadingImgs(s);
-              $container.find('#hm_interestingness').removeClass('loading').html($newElems);
+              DOMCache.$container.find('#hm_interestingness').removeClass('loading').html($newElems);
 
               Shadowbox.setup($newElems, {
                   gallery: "flickr",
