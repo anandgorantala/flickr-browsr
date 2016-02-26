@@ -887,7 +887,7 @@ var flickrbrowsr = (function () {
                     method: 'flickr.interestingness.getList',
                     format: 'json',
                     date: random_date.getFullYear() + '-' + helpers.padNumber((random_date.getMonth())+1, 2) + '-' + helpers.padNumber(random_date.getDate(), 2),
-                    extras: extras,
+                    extras: params.extras,
                     per_page: '60',
                     jsoncallback: 'flickrbrowsr.homeInterestingness'
                 });
