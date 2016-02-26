@@ -866,9 +866,74 @@ var flickrbrowsr = (function () {
 
             }
         },
-        homeInterestingness: function () {
+        homeInterestingness: function(data) {
+			var photo,
+				photoowner,
+				t_url,
+				b_url,
+				full_url,
+				permalink,
+				owner_url,
+				s="",
+				that = this,
+                arrOwners = new Array();
 
-        },
+			if(typeof data != 'object') {
+
+                var randomize_html = '<a title="Show another random date" href="#" onclick="flickrbrowsr.homeInterestingness();return false;">&larr;<br>&rarr;</a>';
+                var random_date = helpers.randomDate(new Date(2005,1,1), new Date());
+
+                flickrapi.callMethod({
+                    method: 'flickr.interestingness.getList',
+                    format: 'json',
+                    date: random_date.getFullYear() + '-' + helpers.padNumber((random_date.getMonth())+1, 2) + '-' + helpers.padNumber(random_date.getDate(), 2),
+                    extras: extras,
+                    per_page: '60',
+                    jsoncallback: 'flickrbrowsr.homeInterestingness'
+                });
+                $container.find('.h2_interestingness').html('Interesting photos from <span>' + random_date.toDateString() + '</span>').
+                		append(randomize_html);
+                $container.find('#hm_interestingness').html('').addClass('loading');
+
+        	} else {
+
+                if(data.stat != 'ok') {
+                    that.doneLoadingImgs();
+                    done=1;
+                    this.throwError(data.message);
+                    return;
+                }
+                var photodata = data.photos;
+                var photoslength = photodata.photo.length;
+                if(photoslength < 1) { $statusbar.addClass('msg').html('No more photos to show.'); done = 1; semaphore = 1; return; }
+                for (var i=0; i < photoslength; i++) {
+                    photo = photodata.photo[i];
+                    full_url = photo.url_l || photo.url_o || photo.url_z || photo.url_m;
+                    photoowner = photo.owner;
+                    photo.title = photo.title || 'Untitled';
+                    permalink = "http://www.flickr.com/photos/" + photoowner + "/" + photo.id;
+                    owner_url = "http://www.flickr.com/photos/" + photoowner;
+                    s +=  '<a rel="shadowbox[flickr]" data-owner_name="'+photo.ownername+'" data-views="'+photo.views+'" data-license="'+photo.license+'" data-permalink="'+permalink+'" data-owner_id="'+photoowner+'" data-owner_url="'+owner_url+'" class="" title="'+ helpers.htmlSafe(photo.title) + 
+                    '" href="' + full_url + '">' + '<img alt="'+ helpers.htmlSafe(photo.title) + 
+                    '" src="' + photo.url_sq + '" width="75px" height="75px" />' + '</a>';
+                    
+                    arrOwners.push(photoowner);
+                }
+			  this.homePhotosets(arrOwners.slice());
+              this.homePeople(arrOwners.slice());
+			  this.homeGalleries(arrOwners.slice());
+ 			  this.homeGroups(arrOwners.slice());
+              var $newElems = helpers.htmlWithFadingImgs(s);
+              $container.find('#hm_interestingness').removeClass('loading').html($newElems);
+
+              Shadowbox.setup($newElems, {
+                  gallery: "flickr",
+                  overlayOpacity: 1,
+                  overlayColor:'#000'
+              });
+
+			}
+		},
         homeTags: function(data) {
             var tag,
                 s = "";
