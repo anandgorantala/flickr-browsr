@@ -889,7 +889,7 @@ var flickrbrowsr = (function () {
                     date: random_date.getFullYear() + '-' + helpers.padNumber((random_date.getMonth())+1, 2) + '-' + helpers.padNumber(random_date.getDate(), 2),
                     extras: params.extras,
                     per_page: '60',
-                    jsoncallback: this.homeInterestingness
+                    jsoncallback: this.homeInterestingness.bind(this)
                 });
                 DOMCache.$container.find('.h2_interestingness').html('Interesting photos from <span>' + random_date.toDateString() + '</span>').
                 		append(randomize_html);
